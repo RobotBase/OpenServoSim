@@ -21,6 +21,24 @@ import os
 import sys
 import time
 import argparse
+import ctypes
+
+# ── Force NVIDIA discrete GPU (defeats Meta Virtual Monitor / Optimus) ──
+# These exported symbols tell the NVIDIA driver to prefer the discrete GPU.
+# They must exist before any OpenGL context is created.
+try:
+    ctypes.CDLL("nvapi64.dll")   # preload NVIDIA API
+except OSError:
+    pass
+# Optimus global hint (DWORD export)
+if sys.platform == "win32":
+    try:
+        ctypes.windll.kernel32.SetEnvironmentVariableW(
+            "SHIM_MCCOMPAT", "0x800000001"
+        )
+    except Exception:
+        pass
+
 import numpy as np
 import mujoco
 import mujoco.viewer
@@ -306,7 +324,17 @@ def run_viewer():
     ctrl_dt = 1.0 / 50.0
     steps_per = int(ctrl_dt / model.opt.timestep)
 
-    with mujoco.viewer.launch_passive(model, data) as viewer:
+    try:
+        viewer_ctx = mujoco.viewer.launch_passive(model, data)
+    except Exception as e:
+        print(f"\n  [ERROR] Failed to create MuJoCo viewer window: {e}")
+        print("  This is likely caused by 'Meta Virtual Monitor' (Quest headset driver)")
+        print("  intercepting OpenGL. Try:")
+        print("    1. Disable 'Meta Virtual Monitor' in Device Manager > Display adapters")
+        print("    2. Or run:  python examples/03b_robotis_walk.py --headless --duration 10")
+        sys.exit(1)
+
+    with viewer_ctx as viewer:
         last_print = -2.0
 
         while viewer.is_running():

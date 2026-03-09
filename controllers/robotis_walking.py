@@ -192,7 +192,11 @@ def solve_ik_simple(x: float, y: float, z: float) -> Tuple[float, float, float]:
     # Knee angle (law of cosines)
     cos_knee = (THIGH_LENGTH**2 + CALF_LENGTH**2 - d**2) / (2 * THIGH_LENGTH * CALF_LENGTH)
     cos_knee = np.clip(cos_knee, -1.0, 1.0)
-    knee = math.pi - math.acos(cos_knee)  # Positive = bending
+    
+    # User reported legs bend backward (flamingo style).
+    # To switch to human-like forward bending, we use the alternate IK solution
+    # by negating the knee angle.
+    knee = -(math.pi - math.acos(cos_knee))
     
     # Hip pitch
     alpha = math.atan2(dx, dz)
@@ -482,17 +486,21 @@ class WalkingEngine:
         angles["l_ank_pitch_act"] = (l_ank_pitch)
         angles["l_ank_roll_act"] = 0.0
         
-        # Arms — natural walking posture (values verified by physical axis test)
-        # sho_pitch: l=Y+ (positive=forward), r=Y- (positive=backward) → mirrored!
-        #   Both get SAME arm_swing value for counter-phase motion
-        # sho_roll: both X- but mirrored geometry → l=+1.3 down, r=-1.3 down
-        # el: both X+ → both same sign for same bend direction
-        angles["r_sho_pitch_act"] = arm_swing       # Y-: positive = backward
-        angles["l_sho_pitch_act"] = arm_swing        # Y+: positive = forward (mirrored)
-        angles["r_sho_roll_act"] = -1.3              # Arm down (verified)
-        angles["l_sho_roll_act"] = 1.3               # Arm down (verified)
-        angles["r_el_act"] = 0.8                     # Elbows bent
-        angles["l_el_act"] = 0.8
+        # Arm pose verified against ROBOTIS source (op3_kinematics_dynamics.cpp):
+        #   getJointDirection() = sum(axis components) = +1 or -1
+        #
+        # sho_pitch: l=Y+ (dir=+1), r=Y- (dir=-1)
+        #   ROBOTIS computeArmAngle: multiplies by getJointDirection()
+        #   So right arm gets NEGATED swing for counter-phase motion
+        # sho_roll: both X- (dir=-1) → l=+1.3 down, r=-1.3 down
+        # el: both X+ (dir=+1) but Y-mirrored geometry → r_el needs opposite sign
+        #   Verified: (l=+0.8, r=-0.8) gives symmetric forearm tips
+        angles["r_sho_pitch_act"] = -arm_swing      # Y-: negated for counter-phase (ROBOTIS: * dir = * -1)
+        angles["l_sho_pitch_act"] = arm_swing        # Y+: same sign (ROBOTIS: * dir = * +1)
+        angles["r_sho_roll_act"] = -1.3              # Arm down
+        angles["l_sho_roll_act"] = 1.3               # Arm down
+        angles["r_el_act"] = 0.8                     # Elbow bent inward (toward body center)
+        angles["l_el_act"] = -0.8                    # Elbow bent inward (toward body center)
         
         # Head
         angles["head_pan_act"] = 0.0
@@ -525,8 +533,8 @@ class WalkingEngine:
         angles["l_sho_pitch_act"] = 0.0
         angles["r_sho_roll_act"] = -1.3
         angles["l_sho_roll_act"] = 1.3
-        angles["r_el_act"] = 0.8
-        angles["l_el_act"] = 0.8
+        angles["r_el_act"] = 0.8                     # Elbow bent inward
+        angles["l_el_act"] = -0.8                    # Elbow bent inward
         angles["head_pan_act"] = 0.0
         angles["head_tilt_act"] = 0.0
         return angles

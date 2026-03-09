@@ -109,12 +109,16 @@ pip install -r requirements.txt
 
 ### 运行仿真 Demo
 
-```bash
-# 运行"呼吸"测试 — 机器人膝盖做正弦波运动
-python main_sim.py --render
+由于框架集成了强大的 UVC 平衡算法与人类正向屈膝逆运动学，我们推荐直接运行 `05_uvc_walk.py` 体验最极致的行走性能：
 
-# 运行 UVC 平衡恢复仿真（开发中）
-python main_sim.py --controller uvc --render
+```bash
+# 运行最新、最快的 UVC 融合步态（人类曲膝 + 高速姿态）
+python examples/05_uvc_walk.py --speed fast
+
+# 尝试低重心、极快步频的"忍者"碎步模式
+python examples/05_uvc_walk.py --speed ninja
+
+# 在仿真中按 'P' 键可以在行走时施加侧向推力，测试 UVC 动态平衡恢复能力
 ```
 
 ---
@@ -129,14 +133,27 @@ python main_sim.py --controller uvc --render
 
 ## 🗺️ 路线图
 
+### Phase 1: 基础框架 ✅
 - [x] 仓库架构搭建
-- [ ] MuJoCo 简化模型 + 基础仿真环境
-- [ ] UVC 算法 Python 实现
-- [ ] 舵机延迟/死区仿真层
-- [ ] LX-15D 串口通信驱动
+- [x] MuJoCo 基础仿真环境 (`sim/mujoco_env.py`)
+- [x] 舵机延迟/死区仿真层 (`sim/servo_model.py`)
+- [x] UVC 算法 Python 实现 (`controllers/uvc_controller.py`)
+- [x] 逆运动学求解器 (`controllers/inverse_kinematics.py`)
+- [x] LX-15D 串口通信驱动 (`hardware/servo_bus.py`)
+
+### Phase 2: 行走能力 ✅
+- [x] ROBOTIS OP3 Walking Engine 移植 (`controllers/robotis_walking.py`)
+- [x] 修复逆运动学“火烈鸟”倒弯膝盖 Bug，实现类人前驱深蹲
+- [x] Demo 脚本系列 (`examples/01~05`)
+
+### Phase 3: 进行中 🚧
+- [x] UVC 算法与行走引擎深度集成 (`controllers/uvc_walking.py`) — **完成！最高路径速度达 189mm/s**
+- [ ] 自定义双足模型 (`models/servo_biped/`)
 - [ ] 完整步态 CPG 生成器
+- [x] 强化学习环境封装 — 框架已搭建，训练中 (另一台机器)
+
+### Phase 4: 待开始
 - [ ] Sim-to-Real 部署验证
-- [ ] 强化学习环境封装 (Gymnasium)
 
 ---
 
