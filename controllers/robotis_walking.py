@@ -47,7 +47,7 @@ class WalkingParam:
     # Movement amplitudes (meters, radians)
     x_move_amplitude: float = 0.0     # Forward step (set at runtime)
     y_move_amplitude: float = 0.0     # Lateral step
-    z_move_amplitude: float = 0.020    # Foot lift height (tuned for weak servos)
+    z_move_amplitude: float = 0.025    # Foot lift height
     angle_move_amplitude: float = 0.0  # Turn angle
     
     # Body sway
@@ -56,7 +56,7 @@ class WalkingParam:
     
     # Offsets
     pelvis_offset: float = math.radians(0.5)   # Pelvis roll offset
-    arm_swing_gain: float = 0.2
+    arm_swing_gain: float = 0.5
     
     # Balance feedback gains
     balance_enable: bool = True
@@ -446,11 +446,12 @@ class WalkingEngine:
         # Apply hip pitch offset (forward lean)
         hip_pitch_off = self.p.hip_pitch_offset
         
-        # Arm swing (counter-phase to step direction)
+        # Arm swing (counter-phase to legs for natural gait)
+        # When right leg steps forward, right arm goes backward (and vice versa)
         arm_swing = 0.0
         if abs(self._x_move_amp) > 0.001:
             arm_swing = wsin(t, T, math.pi * 1.5,
-                           -self._x_move_amp * self.p.arm_swing_gain * 10, 0)
+                           self._x_move_amp * self.p.arm_swing_gain * 10, 0)
         
         # Build joint angle dict (matching MuJoCo actuator names)
         # Joint axis conventions from op3.xml:
@@ -481,13 +482,16 @@ class WalkingEngine:
         angles["l_ank_pitch_act"] = (l_ank_pitch)
         angles["l_ank_roll_act"] = 0.0
         
-        # Arms
-        angles["r_sho_pitch_act"] = arm_swing
-        angles["l_sho_pitch_act"] = -arm_swing
-        angles["r_sho_roll_act"] = 0.3    # Arms slightly out
-        angles["l_sho_roll_act"] = -0.3
-        angles["r_el_act"] = 0.4           # Elbows bent
-        angles["l_el_act"] = -0.4
+        # Arms — natural walking posture
+        # sho_pitch: l=Y+, r=Y- (positive = arm forward for both)
+        # sho_roll: both X- (positive = arm toward body)
+        # el: both X+ (positive = forearm outward)
+        angles["r_sho_pitch_act"] = arm_swing       # Right arm swings opposite to right leg
+        angles["l_sho_pitch_act"] = -arm_swing      # Left arm swings opposite to left leg
+        angles["r_sho_roll_act"] = 0.15             # Arms slightly tucked in (not spread)
+        angles["l_sho_roll_act"] = 0.15             # Both positive = toward body (axis X-)
+        angles["r_el_act"] = -0.5                   # Elbows bent downward
+        angles["l_el_act"] = 0.5                    # Mirrored (axis X+: r=neg=down, l=pos=down)
         
         # Head
         angles["head_pan_act"] = 0.0
@@ -518,10 +522,10 @@ class WalkingEngine:
         angles["l_ank_roll_act"] = 0.0
         angles["r_sho_pitch_act"] = 0.0
         angles["l_sho_pitch_act"] = 0.0
-        angles["r_sho_roll_act"] = 0.3
-        angles["l_sho_roll_act"] = -0.3
-        angles["r_el_act"] = 0.4
-        angles["l_el_act"] = -0.4
+        angles["r_sho_roll_act"] = 0.15
+        angles["l_sho_roll_act"] = 0.15
+        angles["r_el_act"] = -0.5
+        angles["l_el_act"] = 0.5
         angles["head_pan_act"] = 0.0
         angles["head_tilt_act"] = 0.0
         return angles

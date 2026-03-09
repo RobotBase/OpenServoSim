@@ -244,7 +244,7 @@ def run_headless(duration=20.0):
     print(f"  Standing height: {h0*1000:.0f}mm")
     print(f"  Sim timestep: {model.opt.timestep*1000:.1f}ms")
 
-    engine.set_velocity(forward=0.015)
+    engine.set_velocity(forward=0.025)
     engine.start()
 
     ctrl_dt = 1.0 / 50.0
@@ -315,7 +315,7 @@ def run_viewer():
 
             if not walk_started and data.time > 2.0:
                 walk_started = True
-                engine.set_velocity(forward=0.015)
+                engine.set_velocity(forward=0.025)
                 engine.start()
                 print("  Walking started!")
 
