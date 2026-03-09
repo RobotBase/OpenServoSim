@@ -63,9 +63,14 @@
 ```
 OpenServoSim/
 ├── models/                      # 机器人模型
-│   └── servo_biped/             # 10-DOF 舵机双足模型
-│       ├── servo_biped.xml      # MuJoCo MJCF 描述文件
-│       └── meshes/              # STL/OBJ 外观与碰撞模型
+│   ├── servo_biped/             # 10-DOF 舵机双足模型
+│   │   ├── servo_biped.xml      # MuJoCo MJCF 描述文件
+│   │   └── meshes/              # STL/OBJ 外观与碰撞模型
+│   └── reference/               # 📚 参考模型（第三方开源）
+│       ├── robotis_op3/         # DeepMind OP3 Soccer (Apache 2.0)
+│       ├── darwin_op/           # DARwin-OP URDF (BSD-3)
+│       ├── toddlerbot/          # Stanford ToddlerBot (MIT)
+│       └── poppy_humanoid/      # Poppy Humanoid URDF (GPL v3)
 ├── sim/                         # 仿真环境层
 │   ├── mujoco_env.py            # MuJoCo 环境封装
 │   └── servo_model.py           # 💡 舵机物理特性模拟（延迟/死区/滤波）
@@ -83,6 +88,7 @@ OpenServoSim/
 │   └── uvc_algorithm.md         # UVC 算法详解
 ├── main_sim.py                  # 仿真入口
 ├── requirements.txt             # Python 依赖
+├── THIRD_PARTY_LICENSES.md      # 第三方模型许可证
 └── LICENSE                      # MIT License
 ```
 

@@ -1,0 +1,55 @@
+<?xml version="1.0" ?>
+<mujoco model="teleop_leader">
+  <compiler angle="radian" meshdir="assets" autolimits="true"/>
+  <default>
+    <default class="teleop_leader">
+      <joint frictionloss="0.1" armature="0.005"/>
+      <position kp="50" dampratio="1"/>
+      <default class="visual">
+        <geom type="mesh" contype="0" conaffinity="0" group="2"/>
+      </default>
+      <default class="collision">
+        <geom group="3"/>
+      </default>
+    </default>
+  </default>
+  <worldbody>
+    <body name="torso" pos="0 0 0" quat="1 0 0 0" childclass="teleop_leader">
+      <freejoint name="torso_freejoint"/>
+      <inertial pos="-0.0151398 0.00014532 -0.00659966" mass="1.18851" fullinertia="0.00677739 0.00571607 0.0024906 1.04496e-05 -2.77355e-05 2.13612e-05"/>
+      <geom type="mesh" class="visual" pos="-0.0151398 0.00014532 -0.00659966" quat="1 0 0 0" mesh="torso_visual" material="torso_visual_material"/>
+      <geom type="mesh" class="collision" pos="-0.0151398 0.00014532 -0.00659966" quat="1 0 0 0" mesh="torso_collision" material="torso_collision_material"/>
+      <body name="arm" pos="-0.0200079 0.067 0.10175" quat="0.707107 -0.707107 -6.43929e-15 -8.55832e-15">
+        <joint axis="0 0 1" name="left_shoulder_pitch" type="hinge" range="-3.141592653589793 3.141592653589793"/>
+        <inertial pos="-0.000141673 0.0901144 0.0341135" mass="0.414649" fullinertia="0.00202975 0.000135183 0.00199399 -9.01134e-06 7.90913e-08 8.82931e-05"/>
+        <geom type="mesh" class="visual" pos="-0.000141673 0.0901144 0.0341135" quat="0.707107 0.707107 6.32827e-15 8.55832e-15" mesh="arm_visual" material="arm_visual_material"/>
+        <geom type="mesh" class="collision" pos="-0.000141673 0.0901144 0.0341135" quat="0.707107 0.707107 6.32827e-15 8.55832e-15" mesh="arm_collision" material="arm_collision_material"/>
+      </body>
+      <body name="arm_2" pos="-0.0200079 -0.067 0.10175" quat="8.59001e-15 1.07577e-14 -0.707107 0.707107">
+        <joint axis="0 0 1" name="right_shoulder_pitch" type="hinge" range="-3.1415926535897922 3.141592653589794"/>
+        <inertial pos="-0.000113871 0.0901144 0.0341135" mass="0.414649" fullinertia="0.00202975 0.000135186 0.00199399 -1.03252e-05 1.23054e-07 8.82932e-05"/>
+        <geom type="mesh" class="visual" pos="-0.000113871 0.0901144 0.0341135" quat="8.57511e-15 -1.07341e-14 0.707107 -0.707107" mesh="arm_2_visual" material="arm_2_visual_material"/>
+        <geom type="mesh" class="collision" pos="-0.000113871 0.0901144 0.0341135" quat="8.57511e-15 -1.07341e-14 0.707107 -0.707107" mesh="arm_2_collision" material="arm_2_collision_material"/>
+      </body>
+    </body>
+  </worldbody>
+  <asset>
+    <mesh file="merged/arm_visual.stl"/>
+    <mesh file="merged/arm_collision.stl"/>
+    <mesh file="merged/arm_2_collision.stl"/>
+    <mesh file="merged/torso_collision.stl"/>
+    <mesh file="merged/torso_visual.stl"/>
+    <mesh file="merged/arm_2_visual.stl"/>
+    <material name="torso_visual_material" rgba="0.592295 0.76647 0.88654 1"/>
+    <material name="torso_collision_material" rgba="0.592295 0.76647 0.88654 1"/>
+    <material name="arm_visual_material" rgba="0.733371 0.845097 0.906715 1"/>
+    <material name="arm_collision_material" rgba="0.733371 0.845097 0.906715 1"/>
+    <material name="arm_2_visual_material" rgba="0.733371 0.845097 0.906715 1"/>
+    <material name="arm_2_collision_material" rgba="0.733371 0.845097 0.906715 1"/>
+  </asset>
+  <actuator>
+    <position class="teleop_leader" name="left_shoulder_pitch" joint="left_shoulder_pitch" inheritrange="1"/>
+    <position class="teleop_leader" name="right_shoulder_pitch" joint="right_shoulder_pitch" inheritrange="1"/>
+  </actuator>
+  <equality/>
+</mujoco>

@@ -1,0 +1,133 @@
+<?xml version="1.0" ?>
+<mujoco model="left_arm_leader">
+  <compiler angle="radian" meshdir="assets" autolimits="true"/>
+  <default>
+    <default class="left_arm_leader">
+      <joint frictionloss="0.1" armature="0.005"/>
+      <position kp="50" dampratio="1"/>
+      <default class="visual">
+        <geom type="mesh" contype="0" conaffinity="0" group="2"/>
+      </default>
+      <default class="collision">
+        <geom group="3"/>
+      </default>
+    </default>
+  </default>
+  <worldbody>
+    <body name="shoulder_pitch_link" pos="0 0 0" quat="1 0 0 0" childclass="left_arm_leader">
+      <freejoint name="shoulder_pitch_link_freejoint"/>
+      <inertial pos="-2.73648e-18 0.0129132 2.50806e-18" mass="0.0086" fullinertia="1.83656e-06 3.51605e-06 4.01107e-06 1.6405e-22 2.42457e-21 -3.32577e-19"/>
+      <geom type="mesh" class="visual" pos="-2.73648e-18 0.0129132 2.50806e-18" quat="1 0 0 0" mesh="shoulder_pitch_link_visual" material="shoulder_pitch_link_visual_material"/>
+      <geom type="mesh" class="collision" pos="-2.73648e-18 0.0129132 2.50806e-18" quat="1 0 0 0" mesh="shoulder_pitch_link_collision" material="shoulder_pitch_link_collision_material"/>
+      <body name="shoulder_roll_link" pos="-0.019 0.027 -6.05714e-17" quat="0.5 -0.5 0.5 -0.5">
+        <joint axis="0 0 1" name="shoulder_roll" type="hinge" range="-0.4363323129985282 1.5707963267949507"/>
+        <inertial pos="-0.0118938 0.00123983 0.0185214" mass="0.110689" fullinertia="2.42151e-05 3.09134e-05 3.21504e-05 -2.25274e-07 3.92857e-08 -5.94432e-07"/>
+        <geom type="mesh" class="visual" pos="-0.0118938 0.00123983 0.0185214" quat="0.5 0.5 -0.5 0.5" mesh="shoulder_roll_link_visual" material="shoulder_roll_link_visual_material"/>
+        <geom type="mesh" class="collision" pos="-0.0118938 0.00123983 0.0185214" quat="0.5 0.5 -0.5 0.5" mesh="shoulder_roll_link_collision" material="shoulder_roll_link_collision_material"/>
+        <body name="shoulder_gear_drive" pos="-0.024 0.019 0.019" quat="0.5 0.5 -0.5 0.5">
+          <joint axis="0 0 1" name="shoulder_yaw_drive" type="hinge" range="-3.1415926535897825 3.1415926535898038"/>
+          <inertial pos="2.38998e-15 1.04434e-15 -0.00644196" mass="0.0032" fullinertia="1.53683e-07 1.53683e-07 2.31059e-07 -2.16335e-15 0 6.01853e-36"/>
+          <geom type="mesh" class="visual" pos="2.38998e-15 1.04777e-15 -0.00644196" quat="1 6.94378e-14 2.13607e-13 -1.10033e-13" mesh="shoulder_gear_drive_visual" material="shoulder_gear_drive_visual_material"/>
+          <geom type="mesh" class="collision" pos="2.38998e-15 1.04777e-15 -0.00644196" quat="1 6.94378e-14 2.13607e-13 -1.10033e-13" mesh="shoulder_gear_drive_collision" material="shoulder_gear_drive_collision_material"/>
+        </body>
+        <body name="shoulder_yaw_link" pos="-3.58104e-10 0.026 0.019" quat="0.5 -0.5 -0.5 -0.5">
+          <joint axis="0 0 1" name="shoulder_yaw_driven" type="hinge" range="-3.1415926535898038 3.1415926535897825"/>
+          <inertial pos="-2.88763e-17 -2.45873e-16 0.0252377" mass="0.018004" fullinertia="7.79124e-06 1.16309e-05 5.15938e-06 -7.4881e-13 3.62924e-21 -1.024e-19"/>
+          <geom type="mesh" class="visual" pos="-2.88763e-17 -2.42861e-16 0.0252377" quat="3.10477e-13 1 2.65888e-15 2.17407e-13" mesh="shoulder_yaw_link_visual" material="shoulder_yaw_link_visual_material"/>
+          <geom type="mesh" class="collision" pos="-2.88763e-17 -2.42861e-16 0.0252377" quat="3.10477e-13 1 2.65888e-15 2.17407e-13" mesh="shoulder_yaw_link_collision" material="shoulder_yaw_link_collision_material"/>
+          <body name="elbow_roll_link" pos="-0.019 3.46945e-17 0.0616" quat="0.5 -0.5 0.5 -0.5">
+            <joint axis="0 0 1" name="elbow_roll" type="hinge" range="-2.2689280275926285 1.9198621771937625"/>
+            <inertial pos="0.0118938 -0.00123983 0.0185214" mass="0.110689" fullinertia="2.42151e-05 3.09134e-05 3.21504e-05 -2.25274e-07 -3.92857e-08 5.94432e-07"/>
+            <geom type="mesh" class="visual" pos="0.0118938 -0.00123983 0.0185214" quat="0.5 -0.5 -0.5 -0.5" mesh="elbow_roll_link_visual" material="elbow_roll_link_visual_material"/>
+            <geom type="mesh" class="collision" pos="0.0118938 -0.00123983 0.0185214" quat="0.5 -0.5 -0.5 -0.5" mesh="elbow_roll_link_collision" material="elbow_roll_link_collision_material"/>
+            <body name="elbow_gear_drive" pos="0.024 -0.019 0.019" quat="0.5 -0.5 0.5 0.5">
+              <joint axis="0 0 1" name="elbow_yaw_drive" type="hinge" range="-3.141592653589793 3.141592653589793"/>
+              <inertial pos="2.39011e-15 1.03659e-15 -0.00644196" mass="0.0032" fullinertia="1.53683e-07 1.53683e-07 2.31059e-07 -2.16335e-15 4.81482e-35 0"/>
+              <geom type="mesh" class="visual" pos="2.39011e-15 1.04083e-15 -0.00644196" quat="2.2585e-14 -6.75378e-13 -6.15064e-14 1" mesh="elbow_gear_drive_visual" material="elbow_gear_drive_visual_material"/>
+              <geom type="mesh" class="collision" pos="2.39011e-15 1.04083e-15 -0.00644196" quat="2.2585e-14 -6.75378e-13 -6.15064e-14 1" mesh="elbow_gear_drive_collision" material="elbow_gear_drive_collision_material"/>
+            </body>
+            <body name="elbow_yaw_link" pos="3.58105e-10 -0.026 0.019" quat="0.5 0.5 0.5 -0.5">
+              <joint axis="0 0 1" name="elbow_yaw_driven" type="hinge" range="-3.141592653589793 3.141592653589793"/>
+              <inertial pos="-1.17774e-12 -0.00218443 0.0302811" mass="0.0244684" fullinertia="2.23488e-05 1.23953e-05 1.19136e-05 2.6007e-13 2.46675e-15 1.40833e-06"/>
+              <geom type="mesh" class="visual" pos="-1.17774e-12 -0.00218443 0.0302811" quat="8.23523e-13 2.70977e-15 -1 -1.21651e-14" mesh="elbow_yaw_link_visual" material="elbow_yaw_link_visual_material"/>
+              <geom type="mesh" class="collision" pos="-1.17774e-12 -0.00218443 0.0302811" quat="8.23523e-13 2.70977e-15 -1 -1.21651e-14" mesh="elbow_yaw_link_collision" material="elbow_yaw_link_collision_material"/>
+              <body name="wrist_pitch_link" pos="1.02704e-18 -0.0197 0.0576" quat="0.5 -0.5 -0.5 -0.5">
+                <joint axis="0 0 1" name="wrist_pitch_driven" type="hinge" range="-2.0943951023931997 2.094395102393191"/>
+                <inertial pos="-0.0117155 -0.000458143 0.0227029" mass="0.115599" fullinertia="2.65503e-05 3.48077e-05 3.22022e-05 3.02182e-08 -2.46695e-07 5.44493e-07"/>
+                <geom type="mesh" class="visual" pos="-0.0117155 -0.000458143 0.0227029" quat="0.5 0.5 -0.5 -0.5" mesh="wrist_pitch_link_visual" material="wrist_pitch_link_visual_material"/>
+                <geom type="mesh" class="collision" pos="-0.0117155 -0.000458143 0.0227029" quat="0.5 0.5 -0.5 -0.5" mesh="wrist_pitch_link_collision" material="wrist_pitch_link_collision_material"/>
+                <body name="wrist_gear_drive" pos="-0.024 1.52463e-10 0.004" quat="4.45141e-13 -0.707107 0.707107 -8.20761e-14">
+                  <joint axis="0 0 1" name="wrist_pitch_drive" type="hinge" range="-2.094395102393191 2.0943951023931997"/>
+                  <inertial pos="3.05102e-15 7.78775e-17 0.00480965" mass="0.0032" fullinertia="1.40976e-07 1.40976e-07 2.41078e-07 1.61116e-15 3.9008e-35 7.15658e-35"/>
+                  <geom type="mesh" class="visual" pos="3.05102e-15 8.32667e-17 0.00480965" quat="0.707107 -0.707107 6.24167e-13 -2.67537e-13" mesh="wrist_gear_drive_visual" material="wrist_gear_drive_visual_material"/>
+                  <geom type="mesh" class="collision" pos="3.05102e-15 8.32667e-17 0.00480965" quat="0.707107 -0.707107 6.24167e-13 -2.67537e-13" mesh="wrist_gear_drive_collision" material="wrist_gear_drive_collision_material"/>
+                </body>
+                <body name="leader_hand" pos="3.58075e-10 -0.019 0.023" quat="0.5 0.5 -0.5 0.5">
+                  <joint axis="0 0 1" name="wrist_roll" type="hinge" range="-1.5707963267944134 1.5707963267953797"/>
+                  <inertial pos="2.41105e-08 -0.0406582 -0.0193391" mass="0.017" fullinertia="9.19142e-06 6.63273e-06 3.79456e-06 -1.39884e-12 9.47511e-12 4.48222e-08"/>
+                  <geom type="mesh" class="visual" pos="2.41105e-08 -0.0406582 -0.0193391" quat="0.5 -0.5 -0.5 -0.5" mesh="leader_hand_visual" material="leader_hand_visual_material"/>
+                  <geom type="mesh" class="collision" pos="2.41105e-08 -0.0406582 -0.0193391" quat="0.5 -0.5 -0.5 -0.5" mesh="leader_hand_collision" material="leader_hand_collision_material"/>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+  <asset>
+    <mesh file="merged/elbow_yaw_link_collision.stl"/>
+    <mesh file="merged/elbow_yaw_link_visual.stl"/>
+    <mesh file="merged/wrist_pitch_link_collision.stl"/>
+    <mesh file="merged/wrist_gear_drive_visual.stl"/>
+    <mesh file="merged/shoulder_roll_link_visual.stl"/>
+    <mesh file="merged/shoulder_yaw_link_visual.stl"/>
+    <mesh file="merged/shoulder_pitch_link_visual.stl"/>
+    <mesh file="merged/shoulder_gear_drive_collision.stl"/>
+    <mesh file="merged/shoulder_yaw_link_collision.stl"/>
+    <mesh file="merged/wrist_gear_drive_collision.stl"/>
+    <mesh file="merged/elbow_roll_link_visual.stl"/>
+    <mesh file="merged/shoulder_roll_link_collision.stl"/>
+    <mesh file="merged/leader_hand_collision.stl"/>
+    <mesh file="merged/shoulder_gear_drive_visual.stl"/>
+    <mesh file="merged/leader_hand_visual.stl"/>
+    <mesh file="merged/wrist_pitch_link_visual.stl"/>
+    <mesh file="merged/elbow_gear_drive_collision.stl"/>
+    <mesh file="merged/elbow_gear_drive_visual.stl"/>
+    <mesh file="merged/elbow_roll_link_collision.stl"/>
+    <mesh file="merged/shoulder_pitch_link_collision.stl"/>
+    <material name="shoulder_pitch_link_visual_material" rgba="0.615686 0.811765 0.929412 1"/>
+    <material name="shoulder_pitch_link_collision_material" rgba="0.615686 0.811765 0.929412 1"/>
+    <material name="shoulder_roll_link_visual_material" rgba="0.76356 0.870485 0.928205 1"/>
+    <material name="shoulder_roll_link_collision_material" rgba="0.76356 0.870485 0.928205 1"/>
+    <material name="shoulder_gear_drive_visual_material" rgba="0.615686 0.811765 0.929412 1"/>
+    <material name="shoulder_gear_drive_collision_material" rgba="0.615686 0.811765 0.929412 1"/>
+    <material name="shoulder_yaw_link_visual_material" rgba="0.57829 0.731061 0.843405 1"/>
+    <material name="shoulder_yaw_link_collision_material" rgba="0.57829 0.731061 0.843405 1"/>
+    <material name="elbow_roll_link_visual_material" rgba="0.76356 0.870485 0.928205 1"/>
+    <material name="elbow_roll_link_collision_material" rgba="0.76356 0.870485 0.928205 1"/>
+    <material name="elbow_gear_drive_visual_material" rgba="0.615686 0.811765 0.929412 1"/>
+    <material name="elbow_gear_drive_collision_material" rgba="0.615686 0.811765 0.929412 1"/>
+    <material name="elbow_yaw_link_visual_material" rgba="0.560653 0.693 0.802843 1"/>
+    <material name="elbow_yaw_link_collision_material" rgba="0.560653 0.693 0.802843 1"/>
+    <material name="wrist_pitch_link_visual_material" rgba="0.772103 0.856582 0.890498 1"/>
+    <material name="wrist_pitch_link_collision_material" rgba="0.772103 0.856582 0.890498 1"/>
+    <material name="wrist_gear_drive_visual_material" rgba="0.615686 0.811765 0.929412 1"/>
+    <material name="wrist_gear_drive_collision_material" rgba="0.615686 0.811765 0.929412 1"/>
+    <material name="leader_hand_visual_material" rgba="0.615686 0.811765 0.929412 1"/>
+    <material name="leader_hand_collision_material" rgba="0.615686 0.811765 0.929412 1"/>
+  </asset>
+  <actuator>
+    <position class="left_arm_leader" name="shoulder_roll" joint="shoulder_roll" inheritrange="1"/>
+    <position class="left_arm_leader" name="shoulder_yaw_drive" joint="shoulder_yaw_drive" inheritrange="1"/>
+    <position class="left_arm_leader" name="elbow_roll" joint="elbow_roll" inheritrange="1"/>
+    <position class="left_arm_leader" name="elbow_yaw_drive" joint="elbow_yaw_drive" inheritrange="1"/>
+    <position class="left_arm_leader" name="wrist_pitch_drive" joint="wrist_pitch_drive" inheritrange="1"/>
+    <position class="left_arm_leader" name="wrist_roll" joint="wrist_roll" inheritrange="1"/>
+  </actuator>
+  <equality>
+    <joint joint1="shoulder_yaw_driven" joint2="shoulder_yaw_drive" polycoef="0 -1.0 0 0 0"/>
+    <joint joint1="elbow_yaw_driven" joint2="elbow_yaw_drive" polycoef="0 -1.0 0 0 0"/>
+    <joint joint1="wrist_pitch_driven" joint2="wrist_pitch_drive" polycoef="0 -1.0 0 0 0"/>
+  </equality>
+</mujoco>

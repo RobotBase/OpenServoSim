@@ -1,0 +1,164 @@
+<?xml version="1.0" ?>
+<mujoco model="right_arm_gripper">
+  <compiler angle="radian" meshdir="assets" autolimits="true"/>
+  <default>
+    <default class="right_arm_gripper">
+      <joint frictionloss="0.1" armature="0.005"/>
+      <position kp="50" dampratio="1"/>
+      <default class="visual">
+        <geom type="mesh" contype="0" conaffinity="0" group="2"/>
+      </default>
+      <default class="collision">
+        <geom group="3"/>
+      </default>
+    </default>
+  </default>
+  <worldbody>
+    <body name="shoulder_pitch_link" pos="0 0 0" quat="1 0 0 0" childclass="right_arm_gripper">
+      <freejoint name="shoulder_pitch_link_freejoint"/>
+      <inertial pos="3.03459e-18 -0.0129132 1.40335e-18" mass="0.015" fullinertia="3.20331e-06 6.13264e-06 6.99606e-06 1.70329e-30 -6.77993e-21 5.76128e-19"/>
+      <geom type="mesh" class="visual" pos="3.03459e-18 -0.0129132 1.40335e-18" quat="1 0 0 0" mesh="shoulder_pitch_link_visual" material="shoulder_pitch_link_visual_material"/>
+      <geom type="mesh" class="collision" pos="3.03459e-18 -0.0129132 1.40335e-18" quat="1 0 0 0" mesh="shoulder_pitch_link_collision" material="shoulder_pitch_link_collision_material"/>
+      <body name="shoulder_roll_link" pos="0.019 -0.027 -1.42866e-16" quat="0.5 -0.5 -0.5 0.5">
+        <joint axis="0 0 1" name="shoulder_roll" type="hinge" range="-0.4363323129980788 1.5707963267954002"/>
+        <inertial pos="-0.0117736 0.00203648 0.0185402" mass="0.1152" fullinertia="2.66052e-05 3.22099e-05 3.47029e-05 -5.25219e-07 3.29206e-08 -6.36632e-07"/>
+        <geom type="mesh" class="visual" pos="-0.0117736 0.00203648 0.0185402" quat="0.5 0.5 0.5 -0.5" mesh="shoulder_roll_link_visual" material="shoulder_roll_link_visual_material"/>
+        <geom type="mesh" class="collision" pos="-0.0117736 0.00203648 0.0185402" quat="0.5 0.5 0.5 -0.5" mesh="shoulder_roll_link_collision" material="shoulder_roll_link_collision_material"/>
+        <body name="shoulder_gear_drive" pos="-0.024 0.019 0.019" quat="0.5 0.5 -0.5 0.5">
+          <joint axis="0 0 1" name="shoulder_yaw_drive" type="hinge" range="-3.141592653589815 3.1415926535897714"/>
+          <inertial pos="2.34906e-15 1.16262e-15 -0.00662386" mass="0.004" fullinertia="1.9527e-07 1.9527e-07 2.87762e-07 -2.80555e-15 2.41503e-36 9.42346e-36"/>
+          <geom type="mesh" class="visual" pos="2.34906e-15 1.16573e-15 -0.00662386" quat="4.41543e-14 -3.28014e-13 1.5965e-13 -1" mesh="shoulder_gear_drive_visual" material="shoulder_gear_drive_visual_material"/>
+          <geom type="mesh" class="collision" pos="2.34906e-15 1.16573e-15 -0.00662386" quat="4.41543e-14 -3.28014e-13 1.5965e-13 -1" mesh="shoulder_gear_drive_collision" material="shoulder_gear_drive_collision_material"/>
+        </body>
+        <body name="shoulder_yaw_link" pos="-3.58104e-10 0.025 0.019" quat="0.5 -0.5 -0.5 -0.5">
+          <joint axis="0 0 1" name="shoulder_yaw_driven" type="hinge" range="-3.1415926535897714 3.141592653589815"/>
+          <inertial pos="3.5508e-18 -1.41456e-16 0.0257843" mass="0.0247439" fullinertia="1.01507e-05 1.54061e-05 6.98599e-06 -1.01939e-12 -4.89016e-22 -7.44876e-20"/>
+          <geom type="mesh" class="visual" pos="3.73574e-18 -1.38778e-16 0.0257843" quat="2.38868e-13 -1.09448e-14 1 -9.75616e-14" mesh="shoulder_yaw_link_visual" material="shoulder_yaw_link_visual_material"/>
+          <geom type="mesh" class="collision" pos="3.73574e-18 -1.38778e-16 0.0257843" quat="2.38868e-13 -1.09448e-14 1 -9.75616e-14" mesh="shoulder_yaw_link_collision" material="shoulder_yaw_link_collision_material"/>
+          <body name="elbow_roll_link" pos="-0.019 -6.245e-17 0.061" quat="0.5 -0.5 0.5 -0.5">
+            <joint axis="0 0 1" name="elbow_roll" type="hinge" range="-2.268928027592629 1.919862177193762"/>
+            <inertial pos="0.0117736 -0.00203648 0.0185402" mass="0.1152" fullinertia="2.66052e-05 3.22099e-05 3.47029e-05 -5.25219e-07 -3.29206e-08 6.36632e-07"/>
+            <geom type="mesh" class="visual" pos="0.0117736 -0.00203648 0.0185402" quat="0.5 -0.5 0.5 0.5" mesh="elbow_roll_link_visual" material="elbow_roll_link_visual_material"/>
+            <geom type="mesh" class="collision" pos="0.0117736 -0.00203648 0.0185402" quat="0.5 -0.5 0.5 0.5" mesh="elbow_roll_link_collision" material="elbow_roll_link_collision_material"/>
+            <body name="elbow_gear_drive" pos="0.024 -0.019 0.019" quat="0.5 -0.5 0.5 0.5">
+              <joint axis="0 0 1" name="elbow_yaw_drive" type="hinge" range="-3.1415926535899983 3.141592653589588"/>
+              <inertial pos="2.34906e-15 1.16429e-15 -0.00662386" mass="0.004" fullinertia="1.9527e-07 1.9527e-07 2.87762e-07 -2.80555e-15 -5.20428e-35 1.03563e-36"/>
+              <geom type="mesh" class="visual" pos="2.34906e-15 1.16573e-15 -0.00662386" quat="1 9.54634e-14 -2.58793e-13 2.3612e-14" mesh="elbow_gear_drive_visual" material="elbow_gear_drive_visual_material"/>
+              <geom type="mesh" class="collision" pos="2.34906e-15 1.16573e-15 -0.00662386" quat="1 9.54634e-14 -2.58793e-13 2.3612e-14" mesh="elbow_gear_drive_collision" material="elbow_gear_drive_collision_material"/>
+            </body>
+            <body name="elbow_yaw_link" pos="3.58087e-10 -0.025 0.019" quat="0.5 0.5 -0.5 0.5">
+              <joint axis="0 0 1" name="elbow_yaw_driven" type="hinge" range="-3.141592653589588 3.1415926535899983"/>
+              <inertial pos="2.3429e-12 -0.00604452 0.0333598" mass="0.0295299" fullinertia="2.81941e-05 1.64675e-05 1.38153e-05 2.82975e-13 -5.93063e-15 3.43094e-06"/>
+              <geom type="mesh" class="visual" pos="2.3429e-12 -0.00604452 0.0333598" quat="7.71174e-14 -1.12715e-13 1 -2.47969e-13" mesh="elbow_yaw_link_visual" material="elbow_yaw_link_visual_material"/>
+              <geom type="mesh" class="collision" pos="2.3429e-12 -0.00604452 0.0333598" quat="7.71174e-14 -1.12715e-13 1 -2.47969e-13" mesh="elbow_yaw_link_collision" material="elbow_yaw_link_collision_material"/>
+              <body name="wrist_pitch_link" pos="-1.47538e-15 -0.022 0.061" quat="0.5 -0.5 -0.5 -0.5">
+                <joint axis="0 0 1" name="wrist_pitch_driven" type="hinge" range="-2.0943951023930585 2.094395102393332"/>
+                <inertial pos="-0.0114965 -0.000415054 0.021867" mass="0.1276" fullinertia="3.29851e-05 4.15884e-05 3.57365e-05 1.8622e-08 -1.99325e-07 5.35804e-07"/>
+                <geom type="mesh" class="visual" pos="-0.0114965 -0.000415054 0.021867" quat="0.5 0.5 -0.5 -0.5" mesh="wrist_pitch_link_visual" material="wrist_pitch_link_visual_material"/>
+                <geom type="mesh" class="collision" pos="-0.0114965 -0.000415054 0.021867" quat="0.5 0.5 -0.5 -0.5" mesh="wrist_pitch_link_collision" material="wrist_pitch_link_collision_material"/>
+                <body name="wrist_gear_drive" pos="-0.024 1.52465e-10 0.003" quat="4.59417e-13 -0.707107 0.707107 -8.75555e-14">
+                  <joint axis="0 0 1" name="wrist_pitch_drive" type="hinge" range="-2.094395102393332 2.0943951023930585"/>
+                  <inertial pos="2.93791e-15 -8.5662e-17 0.00503438" mass="0.003" fullinertia="1.33264e-07 1.33264e-07 2.24433e-07 1.59295e-15 -4.95221e-36 8.01531e-36"/>
+                  <geom type="mesh" class="visual" pos="2.93791e-15 -8.32667e-17 0.00503438" quat="0.707107 -0.707107 -9.80327e-14 3.10321e-13" mesh="wrist_gear_drive_visual" material="wrist_gear_drive_visual_material"/>
+                  <geom type="mesh" class="collision" pos="2.93791e-15 -8.32667e-17 0.00503438" quat="0.707107 -0.707107 -9.80327e-14 3.10321e-13" mesh="wrist_gear_drive_collision" material="wrist_gear_drive_collision_material"/>
+                </body>
+                <body name="gripper_link" pos="3.58073e-10 -0.019 0.022" quat="0.5 0.5 0.5 -0.5">
+                  <joint axis="0 0 1" name="wrist_roll" type="hinge" range="-1.5707963267948966 1.5707963267948966"/>
+                  <inertial pos="0.0037537 0.0303168 -0.0327167" mass="0.0687174" fullinertia="5.33094e-05 5.37334e-05 1.75597e-05 1.34048e-06 4.88118e-06 -6.91683e-06"/>
+                  <geom type="mesh" class="visual" pos="0.0037537 0.0303168 -0.0327167" quat="0.5 0.5 -0.5 0.5" mesh="gripper_link_visual" material="gripper_link_visual_material"/>
+                  <geom type="mesh" class="collision" pos="0.0037537 0.0303168 -0.0327167" quat="0.5 0.5 -0.5 0.5" mesh="gripper_link_collision" material="gripper_link_collision_material"/>
+                  <body name="gripper_gear_drive" pos="0.0001 0.0397 -0.04995" quat="0.5 0.5 -0.5 0.5">
+                    <joint axis="0 0 1" name="gripper_rack" type="hinge" range="0.0 1.9547687622336491"/>
+                    <inertial pos="-3.1225e-17 3.21537e-17 -0.0025" mass="0.00107037" fullinertia="2.73249e-08 2.73249e-08 5.01899e-08 2.0899e-37 -4.56577e-40 1.65269e-40"/>
+                    <geom type="mesh" class="visual" pos="-3.1225e-17 3.1225e-17 -0.0025" quat="1 -0 -0 -1.06767e-13" mesh="gripper_gear_drive_visual" material="gripper_gear_drive_visual_material"/>
+                    <geom type="mesh" class="collision" pos="-3.1225e-17 3.1225e-17 -0.0025" quat="1 -0 -0 -1.06767e-13" mesh="gripper_gear_drive_collision" material="gripper_gear_drive_collision_material"/>
+                  </body>
+                  <body name="gripper_finger" pos="0.015975 0.03985 -0.064" quat="3.22892e-16 -7.77156e-16 -1.33227e-15 1">
+                    <joint axis="0 0 1" name="gripper_pinion" type="slide" range="-0.000872999999993866 0.023500000000006134"/>
+                    <inertial pos="0.0160522 -0.0386855 0.00981816" mass="0.0265733" fullinertia="1.03138e-05 5.64357e-06 1.268e-05 8.26278e-08 6.65994e-08 2.09843e-08"/>
+                    <geom type="mesh" class="visual" pos="0.0160522 -0.0386855 0.00981816" quat="0.5 -0.5 -0.5 -0.5" mesh="gripper_finger_visual" material="gripper_finger_visual_material"/>
+                    <geom type="mesh" class="collision" pos="0.0160522 -0.0386855 0.00981816" quat="0.5 -0.5 -0.5 -0.5" mesh="gripper_finger_collision" material="gripper_finger_collision_material"/>
+                  </body>
+                  <body name="gripper_finger_2" pos="-0.015975 0.03985 0.026" quat="1.11022e-16 -1 -6.02606e-27 5.55112e-17">
+                    <joint axis="0 0 1" name="gripper_pinion_mirror" type="slide" range="-0.000873000000007036 0.023499999999992964"/>
+                    <inertial pos="0.0160522 -0.0386855 0.00981816" mass="0.0265733" fullinertia="1.03138e-05 5.64357e-06 1.268e-05 8.26278e-08 6.65994e-08 2.09843e-08"/>
+                    <geom type="mesh" class="visual" pos="0.0160522 -0.0386855 0.00981816" quat="0.5 -0.5 0.5 0.5" mesh="gripper_finger_2_visual" material="gripper_finger_2_visual_material"/>
+                    <geom type="mesh" class="collision" pos="0.0160522 -0.0386855 0.00981816" quat="0.5 -0.5 0.5 0.5" mesh="gripper_finger_2_collision" material="gripper_finger_2_collision_material"/>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+  <asset>
+    <mesh file="merged/wrist_gear_drive_collision.stl"/>
+    <mesh file="merged/wrist_gear_drive_visual.stl"/>
+    <mesh file="merged/shoulder_yaw_link_collision.stl"/>
+    <mesh file="merged/gripper_gear_drive_collision.stl"/>
+    <mesh file="merged/gripper_gear_drive_visual.stl"/>
+    <mesh file="merged/gripper_finger_2_visual.stl"/>
+    <mesh file="merged/elbow_roll_link_collision.stl"/>
+    <mesh file="merged/gripper_link_visual.stl"/>
+    <mesh file="merged/gripper_finger_visual.stl"/>
+    <mesh file="merged/shoulder_pitch_link_visual.stl"/>
+    <mesh file="merged/shoulder_roll_link_collision.stl"/>
+    <mesh file="merged/gripper_link_collision.stl"/>
+    <mesh file="merged/shoulder_pitch_link_collision.stl"/>
+    <mesh file="merged/shoulder_roll_link_visual.stl"/>
+    <mesh file="merged/shoulder_yaw_link_visual.stl"/>
+    <mesh file="merged/elbow_gear_drive_collision.stl"/>
+    <mesh file="merged/wrist_pitch_link_collision.stl"/>
+    <mesh file="merged/elbow_gear_drive_visual.stl"/>
+    <mesh file="merged/gripper_finger_collision.stl"/>
+    <mesh file="merged/shoulder_gear_drive_collision.stl"/>
+    <mesh file="merged/gripper_finger_2_collision.stl"/>
+    <mesh file="merged/shoulder_gear_drive_visual.stl"/>
+    <mesh file="merged/elbow_roll_link_visual.stl"/>
+    <mesh file="merged/elbow_yaw_link_collision.stl"/>
+    <mesh file="merged/wrist_pitch_link_visual.stl"/>
+    <mesh file="merged/elbow_yaw_link_visual.stl"/>
+    <material name="shoulder_pitch_link_visual_material" rgba="0.615686 0.811765 0.929412 1"/>
+    <material name="shoulder_pitch_link_collision_material" rgba="0.615686 0.811765 0.929412 1"/>
+    <material name="shoulder_roll_link_visual_material" rgba="0.75922 0.862174 0.917756 1"/>
+    <material name="shoulder_roll_link_collision_material" rgba="0.75922 0.862174 0.917756 1"/>
+    <material name="shoulder_gear_drive_visual_material" rgba="0.615686 0.811765 0.929412 1"/>
+    <material name="shoulder_gear_drive_collision_material" rgba="0.615686 0.811765 0.929412 1"/>
+    <material name="shoulder_yaw_link_visual_material" rgba="0.542005 0.729062 0.886557 1"/>
+    <material name="shoulder_yaw_link_collision_material" rgba="0.542005 0.729062 0.886557 1"/>
+    <material name="elbow_roll_link_visual_material" rgba="0.75922 0.862174 0.917756 1"/>
+    <material name="elbow_roll_link_collision_material" rgba="0.75922 0.862174 0.917756 1"/>
+    <material name="elbow_gear_drive_visual_material" rgba="0.615686 0.811765 0.929412 1"/>
+    <material name="elbow_gear_drive_collision_material" rgba="0.615686 0.811765 0.929412 1"/>
+    <material name="elbow_yaw_link_visual_material" rgba="0.516885 0.653641 0.793594 1"/>
+    <material name="elbow_yaw_link_collision_material" rgba="0.516885 0.653641 0.793594 1"/>
+    <material name="wrist_pitch_link_visual_material" rgba="0.748702 0.84202 0.892409 1"/>
+    <material name="wrist_pitch_link_collision_material" rgba="0.748702 0.84202 0.892409 1"/>
+    <material name="wrist_gear_drive_visual_material" rgba="0.615686 0.811765 0.929412 1"/>
+    <material name="wrist_gear_drive_collision_material" rgba="0.615686 0.811765 0.929412 1"/>
+    <material name="gripper_link_visual_material" rgba="0.630539 0.762991 0.810843 1"/>
+    <material name="gripper_link_collision_material" rgba="0.630539 0.762991 0.810843 1"/>
+    <material name="gripper_gear_drive_visual_material" rgba="0.647059 0.647059 0.647059 1"/>
+    <material name="gripper_gear_drive_collision_material" rgba="0.647059 0.647059 0.647059 1"/>
+    <material name="gripper_finger_visual_material" rgba="0.615686 0.811765 0.929412 1"/>
+    <material name="gripper_finger_collision_material" rgba="0.615686 0.811765 0.929412 1"/>
+    <material name="gripper_finger_2_visual_material" rgba="0.615686 0.811765 0.929412 1"/>
+    <material name="gripper_finger_2_collision_material" rgba="0.615686 0.811765 0.929412 1"/>
+  </asset>
+  <actuator>
+    <position class="right_arm_gripper" name="shoulder_roll" joint="shoulder_roll" inheritrange="1"/>
+    <position class="right_arm_gripper" name="shoulder_yaw_drive" joint="shoulder_yaw_drive" inheritrange="1"/>
+    <position class="right_arm_gripper" name="elbow_roll" joint="elbow_roll" inheritrange="1"/>
+    <position class="right_arm_gripper" name="elbow_yaw_drive" joint="elbow_yaw_drive" inheritrange="1"/>
+    <position class="right_arm_gripper" name="wrist_pitch_drive" joint="wrist_pitch_drive" inheritrange="1"/>
+    <position class="right_arm_gripper" name="wrist_roll" joint="wrist_roll" inheritrange="1"/>
+    <position class="right_arm_gripper" name="gripper_rack" joint="gripper_rack" inheritrange="1"/>
+  </actuator>
+  <equality>
+    <joint joint1="shoulder_yaw_driven" joint2="shoulder_yaw_drive" polycoef="0 -1.0 0 0 0"/>
+    <joint joint1="elbow_yaw_driven" joint2="elbow_yaw_drive" polycoef="0 -1.0 0 0 0"/>
+    <joint joint1="wrist_pitch_driven" joint2="wrist_pitch_drive" polycoef="0 -1.0 0 0 0"/>
+  </equality>
+</mujoco>
