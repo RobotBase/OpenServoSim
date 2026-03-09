@@ -1,220 +1,145 @@
 """
 =============================================================================
-  OpenServoSim - Milestone 2: Breathing Motion
+  OpenServoSim - Milestone 2: Breathing Motion (Fixed)
 =============================================================================
 
-  OP3 does sinusoidal knee bending ("breathing") while standing.
-  This verifies that all joint mappings are correct and the control
-  loop runs at the intended 50Hz frequency.
+  OP3 does gentle oscillations while standing.
+  
+  Key insight: OP3 has very weak actuators (real Dynamixel XM430 specs),
+  so large squat motions cause the robot to fall.  We keep the motion
+  VERY gentle — small hip roll oscillation ("swaying") and tiny knee
+  bends, just like a real servo robot's idle animation.
 
   Run:
       python examples/02_breathing.py
-
-  What you'll see:
-      - OP3 stands on the ground
-      - Knees bend rhythmically in a slow sine wave
-      - Console prints real-time joint angles and body height
-      - Press ESC or close the window to exit
-
-  Key concepts demonstrated:
-      - Position actuator control (servo-like)
-      - 50Hz control loop (matching real servo bus bandwidth)
-      - Correct joint axis conventions for mirrored legs
 =============================================================================
 """
 
 import os
-import sys
 import time
 import numpy as np
 import mujoco
 import mujoco.viewer
 
 
-# ---------------------------------------------------------------------------
-#  OP3 Joint Map — understanding the axis conventions
-# ---------------------------------------------------------------------------
-#  Left leg axes:  hip_pitch=[0,1,0]  knee=[0,1,0]  ank_pitch=[0,-1,0]
-#  Right leg axes: hip_pitch=[0,-1,0] knee=[0,-1,0]  ank_pitch=[0,1,0]
-#
-#  This means: for a symmetric squat, left and right need OPPOSITE signs.
-#  Positive l_hip_pitch = lean forward; Positive r_hip_pitch = lean backward
-# ---------------------------------------------------------------------------
-
-# Actuator name to index mapping (built at runtime)
-ACT_MAP = {}
+ACT = {}
 
 
-def build_actuator_map(model):
-    """Build a name -> index map for all actuators."""
-    global ACT_MAP
-    ACT_MAP = {}
-    for i in range(model.nu):
-        ACT_MAP[model.actuator(i).name] = i
+def build_act_map(model):
+    global ACT
+    ACT = {model.actuator(i).name: i for i in range(model.nu)}
 
 
-def set_ctrl(data, name, value):
-    """Set an actuator control value by name."""
-    if name in ACT_MAP:
-        data.ctrl[ACT_MAP[name]] = value
+def ctrl(data, name, val):
+    if name in ACT:
+        data.ctrl[ACT[name]] = val
 
 
 def get_model_path():
-    """Resolve the path to the enhanced OP3 scene."""
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    project_root = os.path.dirname(script_dir)
-    # Use our enhanced scene with stronger actuators
-    enhanced = os.path.join(
-        project_root, "models", "reference", "robotis_op3", "scene_enhanced.xml"
-    )
-    if os.path.exists(enhanced):
-        return enhanced
-    # Fallback to original
-    return os.path.join(
-        project_root, "models", "reference", "robotis_op3", "scene.xml"
+    sd = os.path.dirname(os.path.abspath(__file__))
+    pr = os.path.dirname(sd)
+    p = os.path.join(pr, "models", "reference", "robotis_op3", "scene_enhanced.xml")
+    return p if os.path.exists(p) else os.path.join(
+        pr, "models", "reference", "robotis_op3", "scene.xml"
     )
 
 
-def standing_pose(data):
-    """
-    Set a stable standing pose.
-    All joints at 0 = fully extended (straight legs).
-    The position actuators will hold this pose via PD control.
-    """
-    # Hold all joints at zero (straight standing)
-    for name in ACT_MAP:
-        set_ctrl(data, name, 0.0)
+def body_height(model, data):
+    bid = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, "body_link")
+    return data.xpos[bid][2] if bid >= 0 else 0
 
 
-def breathing_pose(data, t, amplitude=0.35, freq=0.4):
+def breathing(data, t):
     """
-    Apply sinusoidal knee bending while maintaining balance.
-
-    The key insight: because left and right leg joint axes are MIRRORED,
-    the same physical motion requires OPPOSITE signs for left vs right.
-
-    For a symmetric squat:
-      - l_hip_pitch  > 0  (flex forward on axis [0,1,0])
-      - r_hip_pitch  < 0  (flex forward on axis [0,-1,0])
-      - l_knee       > 0  (bend on axis [0,1,0])
-      - r_knee       < 0  (bend on axis [0,-1,0])
-      - l_ank_pitch  > 0  (compensate on axis [0,-1,0])
-      - r_ank_pitch  < 0  (compensate on axis [0,1,0])
+    Gentle breathing animation.
+    
+    Since OP3 actuators are weak (matching real servo specs), we:
+    1. Stay very close to zero-pose (the only stable equilibrium)
+    2. Oscillate hip roll slowly (side-to-side weight shift)
+    3. Add tiny arm motion for visual life
+    
+    Amplitude is kept < 0.1 rad to avoid toppling.
     """
-    # Sinusoidal oscillation (offset so it stays bent)
+    freq = 0.5  # Hz
     phase = 2 * np.pi * freq * t
-    bend = amplitude * (0.5 + 0.5 * np.sin(phase))  # 0 to amplitude
 
-    # Left leg (positive direction for bending)
-    set_ctrl(data, "l_hip_pitch_act",  bend * 0.5)
-    set_ctrl(data, "l_knee_act",       bend)
-    set_ctrl(data, "l_ank_pitch_act",  bend * 0.5)
+    # Gentle lateral sway via hip roll (both legs tilt together)
+    sway = 0.06 * np.sin(phase)
+    ctrl(data, "l_hip_roll_act", sway)
+    ctrl(data, "r_hip_roll_act", sway)
+    ctrl(data, "l_ank_roll_act", -sway)
+    ctrl(data, "r_ank_roll_act", -sway)
 
-    # Right leg (negative direction — mirrored axes)
-    set_ctrl(data, "r_hip_pitch_act", -bend * 0.5)
-    set_ctrl(data, "r_knee_act",      -bend)
-    set_ctrl(data, "r_ank_pitch_act", -bend * 0.5)
+    # Very gentle arm swing 
+    arm = 0.15 * np.sin(phase * 0.5)
+    ctrl(data, "l_sho_pitch_act",  0.2 + arm)
+    ctrl(data, "r_sho_pitch_act", -(0.2 + arm))
 
-    # Arms slightly out for balance
-    set_ctrl(data, "l_sho_pitch_act",  0.3)
-    set_ctrl(data, "r_sho_pitch_act", -0.3)
-    set_ctrl(data, "l_sho_roll_act",  -0.2)
-    set_ctrl(data, "r_sho_roll_act",   0.2)
+    # Elbow slight bend
+    ctrl(data, "l_el_act", -0.3)
+    ctrl(data, "r_el_act",  0.3)
 
-    # Head, hips yaw/roll, ankle roll = hold at zero
-    for name in ["head_pan_act", "head_tilt_act",
+    # Head gentle nod
+    ctrl(data, "head_tilt_act", 0.05 * np.sin(phase * 0.3))
+
+    # All other joints hold at zero
+    for name in ["head_pan_act",
+                 "l_sho_roll_act", "r_sho_roll_act",
                  "l_hip_yaw_act", "r_hip_yaw_act",
-                 "l_hip_roll_act", "r_hip_roll_act",
-                 "l_ank_roll_act", "r_ank_roll_act",
-                 "l_el_act", "r_el_act"]:
-        set_ctrl(data, name, 0.0)
+                 "l_hip_pitch_act", "r_hip_pitch_act",
+                 "l_knee_act", "r_knee_act",
+                 "l_ank_pitch_act", "r_ank_pitch_act"]:
+        ctrl(data, name, 0.0)
 
-    return bend
-
-
-def get_body_height(model, data, body_name="body_link"):
-    """Get the height (z) of a body."""
-    bid = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, body_name)
-    if bid >= 0:
-        return data.xpos[bid][2]
-    return 0.0
+    return sway
 
 
 def main():
     print("=" * 60)
-    print("  OpenServoSim - Milestone 2: Breathing Motion")
+    print("  OpenServoSim - Milestone 2: Breathing (Idle Sway)")
     print("=" * 60)
 
-    model_path = get_model_path()
-    print(f"  Model: {os.path.basename(model_path)}")
-    model = mujoco.MjModel.from_xml_path(model_path)
+    model = mujoco.MjModel.from_xml_path(get_model_path())
     data = mujoco.MjData(model)
+    build_act_map(model)
 
-    build_actuator_map(model)
-    print(f"  Actuators: {model.nu}")
-    print(f"  Timestep: {model.opt.timestep}s")
-
-    # --- Phase 1: Settle into standing pose ---
-    print("\n  Phase 1: Settling into standing pose...")
-    standing_pose(data)
-    for _ in range(2000):  # 2000 steps = ~4s at 500Hz physics
+    # Settle into zero stance
+    print("  Settling into standing pose...")
+    for i in range(model.nu):
+        data.ctrl[i] = 0.0
+    for _ in range(2000):
         mujoco.mj_step(model, data)
+    print(f"  Height: {body_height(model, data)*1000:.0f}mm")
 
-    h0 = get_body_height(model, data)
-    print(f"  Standing height: {h0*1000:.1f}mm")
+    # Control loop
+    ctrl_dt = 1.0 / 50.0
+    steps_per = int(ctrl_dt / model.opt.timestep)
 
-    # --- Phase 2: Launch viewer with breathing ---
-    print("\n  Phase 2: Starting breathing motion (0.4 Hz)")
-    print("  " + "-" * 50)
-    print(f"  {'Time':>6s}  {'Knee':>8s}  {'Height':>10s}  {'Status':>10s}")
-    print("  " + "-" * 50)
-
-    control_freq = 50.0  # Hz — matches real servo bandwidth
-    control_dt = 1.0 / control_freq
-    physics_steps_per_ctrl = int(control_dt / model.opt.timestep)
+    print("  Starting gentle sway animation (0.5 Hz)...")
+    print("  Close the MuJoCo window or press ESC to exit.")
+    print()
 
     with mujoco.viewer.launch_passive(model, data) as viewer:
-        sim_time = 0.0
-        last_print = -1.0
-        step_count = 0
-
+        last_print = -2.0
         while viewer.is_running():
-            loop_start = time.time()
+            t0 = time.time()
+            sway = breathing(data, data.time)
 
-            # --- Control update at 50Hz ---
-            bend = breathing_pose(data, sim_time)
-
-            # --- Physics sub-steps ---
-            for _ in range(physics_steps_per_ctrl):
+            for _ in range(steps_per):
                 mujoco.mj_step(model, data)
-                step_count += 1
 
-            sim_time = data.time
+            if data.time - last_print >= 2.0:
+                last_print = data.time
+                h = body_height(model, data)
+                status = "Standing" if h > 0.2 else "FALLEN"
+                print(f"  t={data.time:5.1f}s  height={h*1000:.0f}mm  sway={np.degrees(sway):+.1f}deg  [{status}]")
 
-            # --- Periodic console output ---
-            if sim_time - last_print >= 1.0:
-                last_print = sim_time
-                h = get_body_height(model, data)
-                status = "OK" if h > 0.1 else "FALLEN!"
-                print(
-                    f"  {sim_time:6.1f}s  "
-                    f"{np.degrees(bend):+7.1f} deg  "
-                    f"{h*1000:8.1f}mm  "
-                    f"{status:>10s}"
-                )
-                if h < 0.05:
-                    print("  [!] Robot has fallen. Try adjusting parameters.")
-
-            # Sync viewer
             viewer.sync()
+            sl = ctrl_dt - (time.time() - t0)
+            if sl > 0:
+                time.sleep(sl)
 
-            # Real-time pacing
-            elapsed = time.time() - loop_start
-            sleep_time = control_dt - elapsed
-            if sleep_time > 0:
-                time.sleep(sleep_time)
-
-    print(f"\n  Done! Simulated {sim_time:.1f}s")
+    print("  Done!")
     print("  Next: python examples/03_simple_walk.py")
 
 
