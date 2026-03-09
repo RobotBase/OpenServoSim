@@ -482,16 +482,17 @@ class WalkingEngine:
         angles["l_ank_pitch_act"] = (l_ank_pitch)
         angles["l_ank_roll_act"] = 0.0
         
-        # Arms — natural walking posture
-        # sho_pitch: l=Y+, r=Y- (positive = arm forward for both)
-        # sho_roll: both X- (positive = arm toward body)
-        # el: both X+ (positive = forearm outward)
-        angles["r_sho_pitch_act"] = arm_swing       # Right arm swings opposite to right leg
-        angles["l_sho_pitch_act"] = -arm_swing      # Left arm swings opposite to left leg
-        angles["r_sho_roll_act"] = 0.15             # Arms slightly tucked in (not spread)
-        angles["l_sho_roll_act"] = 0.15             # Both positive = toward body (axis X-)
-        angles["r_el_act"] = -0.5                   # Elbows bent downward
-        angles["l_el_act"] = 0.5                    # Mirrored (axis X+: r=neg=down, l=pos=down)
+        # Arms — natural walking posture (values verified by physical axis test)
+        # sho_pitch: l=Y+ (positive=forward), r=Y- (positive=backward) → mirrored!
+        #   Both get SAME arm_swing value for counter-phase motion
+        # sho_roll: both X- but mirrored geometry → l=+1.3 down, r=-1.3 down
+        # el: both X+ → both same sign for same bend direction
+        angles["r_sho_pitch_act"] = arm_swing       # Y-: positive = backward
+        angles["l_sho_pitch_act"] = arm_swing        # Y+: positive = forward (mirrored)
+        angles["r_sho_roll_act"] = -1.3              # Arm down (verified)
+        angles["l_sho_roll_act"] = 1.3               # Arm down (verified)
+        angles["r_el_act"] = 0.8                     # Elbows bent
+        angles["l_el_act"] = 0.8
         
         # Head
         angles["head_pan_act"] = 0.0
@@ -522,10 +523,10 @@ class WalkingEngine:
         angles["l_ank_roll_act"] = 0.0
         angles["r_sho_pitch_act"] = 0.0
         angles["l_sho_pitch_act"] = 0.0
-        angles["r_sho_roll_act"] = 0.15
-        angles["l_sho_roll_act"] = 0.15
-        angles["r_el_act"] = -0.5
-        angles["l_el_act"] = 0.5
+        angles["r_sho_roll_act"] = -1.3
+        angles["l_sho_roll_act"] = 1.3
+        angles["r_el_act"] = 0.8
+        angles["l_el_act"] = 0.8
         angles["head_pan_act"] = 0.0
         angles["head_tilt_act"] = 0.0
         return angles
