@@ -161,6 +161,34 @@ SPEED_PRESETS = {
         ),
         "forward": 0.035,
     },
+    "robust": {
+        # Data-driven robust preset found via 100-iteration Random Search
+        # Survives extreme teleop stress testing (forward -> turn -> back -> sidestep)
+        "walk": WalkingParam(
+            init_z_offset=0.035,
+            x_move_amplitude=0.035,
+            period_time=0.415,  # Extremely fast cadence
+            z_move_amplitude=0.031,
+            dsp_ratio=0.151,
+            y_swap_amplitude=0.029,
+            z_swap_amplitude=0.004,
+            arm_swing_gain=1.29,
+            pelvis_offset=0.009,
+            balance_ankle_pitch_gain=1.13,
+            balance_ankle_roll_gain=1.00,
+            balance_hip_roll_gain=0.52,
+            balance_knee_gain=0.62,
+        ),
+        "uvc": UVCParam(
+            gain_roll=0.38, gain_pitch=0.18,
+            dead_zone=0.057,
+            roll_scale=0.24, pitch_scale=0.24,
+            max_correction=0.12,
+            roll_decay=0.85, pitch_decay=0.87,
+            warmup_time=1.0,
+        ),
+        "forward": 0.035,
+    }
 }
 
 

@@ -74,8 +74,8 @@ def run_teleop():
     data = mujoco.MjData(model)
     act_map = build_act_map(model)
     
-    # Use the 'ninja' preset for fast, snappy response and low crouch
-    preset = SPEED_PRESETS["ninja"]
+    # Use the 'robust' preset discovered by our random search pipeline!
+    preset = SPEED_PRESETS["robust"]
     engine = UVCWalkingEngine(preset["walk"], preset["uvc"])
     
     # Current velocity states
