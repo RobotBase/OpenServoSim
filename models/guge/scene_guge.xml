@@ -1,0 +1,129 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mujoco model="guge_upper_body">
+  <compiler angle="radian" meshdir="../guge_urdf/meshes/" />
+  <asset>
+    <mesh name="base_link" file="base_link.STL" />
+    <mesh name="spine1" file="spine1.STL" />
+    <mesh name="spine2" file="spine2.STL" />
+    <mesh name="spine3" file="spine3.STL" />
+    <mesh name="left_arm1" file="left_arm1.STL" />
+    <mesh name="letf_arm2" file="letf_arm2.STL" />
+    <mesh name="letf_arm3" file="letf_arm3.STL" />
+    <mesh name="letf_arm4" file="letf_arm4.STL" />
+    <mesh name="letf_arm5" file="letf_arm5.STL" />
+    <mesh name="right_arm1" file="right_arm1.STL" />
+    <mesh name="right_arm2" file="right_arm2.STL" />
+    <mesh name="right_arm3" file="right_arm3.STL" />
+    <mesh name="right_arm4" file="right_arm4.STL" />
+    <mesh name="right_arm5" file="right_arm5.STL" />
+    <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="3072" />
+    <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="0.2 0.3 0.4" rgb2="0.1 0.2 0.3" markrgb="0.8 0.8 0.8" width="300" height="300" />
+    <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.2" />
+  </asset>
+  <worldbody>
+    <geom name="floor" type="plane" size="5 5 0.1" material="groundplane" />
+    <light name="spotlight" mode="targetbodycom" target="spine3" pos="0 -1 2" diffuse="0.8 0.8 0.8" />
+    <light name="ambient" directional="true" pos="0 0 3" dir="0 0 -1" diffuse="0.4 0.4 0.4" />
+    <body name="stand" pos="0 0 0.8">
+      <geom name="stand_pole" type="cylinder" size="0.02 0.4" pos="0 0 -0.4" rgba="0.3 0.3 0.3 1" contype="0" conaffinity="0" />
+      <geom name="stand_base" type="cylinder" size="0.15 0.02" pos="0 0 -0.8" rgba="0.3 0.3 0.3 1" contype="0" conaffinity="0" />
+      <body name="base_link" pos="0 0 0">
+        <geom type="mesh" rgba="1 1 1 1" mesh="base_link" />
+        <body name="spine1" pos="0.00025 -0.011777 0.04725" quat="-2.59734e-06 0.707105 2.59735e-06 0.707108">
+          <inertial pos="0.0389276 0.00499534 -0.000482303" quat="0.5319 0.465067 0.406971 0.578938" mass="0.725189" diaginertia="0.000580173 0.000577278 0.000572671" />
+          <joint name="spine1" pos="0 0 0" axis="0 0 -1" range="-1.0472 1.0472" actuatorfrcrange="-100 100" stiffness="200000" springref="0" damping="200" />
+          <geom type="mesh" rgba="1 1 1 1" mesh="spine1" />
+          <body name="spine2" pos="0.082 0.005 0" quat="0.499998 0.5 0.5 -0.500002">
+            <inertial pos="-1.56705e-09 0.0373978 0.0227848" quat="0.00722029 0.70707 0.00722029 0.70707" mass="0.0915669" diaginertia="8.91559e-05 7.41295e-05 5.57264e-05" />
+            <joint name="spine2" pos="0 0 0" axis="0 0 1" range="-1.0472 1.0472" actuatorfrcrange="-100 100" stiffness="200000" springref="0" damping="200" />
+            <geom type="mesh" rgba="1 1 1 1" mesh="spine2" />
+            <body name="spine3" pos="0 0.0645 0" quat="0.707105 0 0 -0.707108">
+              <inertial pos="-0.105525 9.89615e-05 -0.000781486" quat="0.500765 0.500162 -0.499656 0.499416" mass="0.952001" diaginertia="0.00112675 0.000775321 0.00075087" />
+              <joint name="spine3" pos="0 0 0" axis="1 0 0" range="-1.0472 1.0472" actuatorfrcrange="-100 100" stiffness="200000" springref="0" damping="200" />
+              <geom type="mesh" rgba="0 0.92549 1 1" mesh="spine3" />
+              <body name="left_arm1" pos="-0.13199 0.10772 0" quat="0.766033 0 0 -0.642802">
+                <inertial pos="-0.0362476 5.69056e-10 -0.000276671" quat="0.546655 0.448519 0.448554 0.546625" mass="0.161439" diaginertia="8.42828e-05 6.91169e-05 6.76674e-05" />
+                <joint name="left_arm1" pos="0 0 0" axis="1 0 0" range="-2.0944 2.0944" actuatorfrcrange="-100 100" />
+                <geom type="mesh" rgba="1 1 1 1" mesh="left_arm1" />
+                <body name="left_arm2" pos="-0.0455 0 0" quat="-0.430491 0.560963 0.43049 0.560961">
+                  <inertial pos="1.62125e-05 -0.0657239 -1.94246e-07" quat="0.491264 0.491372 -0.508482 0.508585" mass="0.158227" diaginertia="0.000124031 0.000111002 6.59201e-05" />
+                  <joint name="left_arm2" pos="0 0 0" axis="1 0 0" range="-2.2689 2.2689" actuatorfrcrange="-100 100" />
+                  <geom type="mesh" rgba="1 1 1 1" mesh="letf_arm2" />
+                  <body name="left_arm3" pos="1.5e-05 -0.103 0" quat="0.499998 -0.5 -0.500002 0.5">
+                    <inertial pos="-0.130584 0.000138485 -1.30075e-07" quat="-0.00306086 0.707108 0.00353127 0.70709" mass="0.183436" diaginertia="0.000118456 0.000103248 7.3398e-05" />
+                    <joint name="left_arm3" pos="0 0 0" axis="-1 0 0" range="-2.0944 2.0944" actuatorfrcrange="-100 100" />
+                    <geom type="mesh" rgba="1 1 1 1" mesh="letf_arm3" />
+                    <body name="left_arm4" pos="-0.1505 0 0" quat="-2.59734e-06 0.707105 0.707108 -2.59735e-06">
+                      <inertial pos="0.000495647 -0.0563067 1.40988e-07" quat="0.499804 0.500155 -0.499846 0.500195" mass="0.0862002" diaginertia="5.38102e-05 4.43488e-05 2.73177e-05" />
+                      <joint name="left_arm4" pos="0 0 0" axis="-1 0 0" range="-2.0944 2.0944" actuatorfrcrange="-100 100" />
+                      <geom type="mesh" rgba="1 1 1 1" mesh="letf_arm4" />
+                      <body name="left_arm5" pos="0.00049256 -0.09 0" quat="0.499998 -0.5 0.500002 -0.5">
+                        <inertial pos="0.0613546 -7.53654e-07 9.49358e-07" quat="0.307773 0.636613 0.307799 0.6366" mass="0.015991" diaginertia="3.00054e-05 2.99968e-05 2.01608e-06" />
+                        <joint name="left_arm5" pos="0 0 0" axis="-1 0 0" range="-2.0944 2.0944" actuatorfrcrange="-100 100" />
+                        <geom type="mesh" rgba="1 1 1 1" mesh="letf_arm5" />
+                      </body>
+                    </body>
+                  </body>
+                </body>
+              </body>
+              <body name="right_arm1" pos="-0.13199 -0.10772 0" quat="0.541666 -0.541668 -0.45453 0.454529">
+                <inertial pos="-0.0362476 -0.000276671 -5.69057e-10" quat="-0.0693463 0.703698 0.0693922 0.703694" mass="0.161439" diaginertia="8.42828e-05 6.91169e-05 6.76674e-05" />
+                <joint name="right_arm1" pos="0 0 0" axis="1 0 0" range="-2.0944 2.0944" actuatorfrcrange="-100 100" />
+                <geom type="mesh" rgba="1 1 1 1" mesh="right_arm1" />
+                <body name="right_arm2" pos="-0.0455 0 0" quat="-0.430463 0.430457 0.560987 0.560982">
+                  <inertial pos="1.94246e-07 -0.0657239 1.62125e-05" quat="0.707077 0.706927 -0.0121711 0.0121752" mass="0.158227" diaginertia="0.000124031 0.000111002 6.59201e-05" />
+                  <joint name="right_arm2" pos="0 0 0" axis="0 0 -1" range="-2.0944 2.0944" actuatorfrcrange="-100 100" />
+                  <geom type="mesh" rgba="1 1 1 1" mesh="right_arm2" />
+                  <body name="right_arm3" pos="0 -0.103 1.5e-05" quat="-2.59734e-06 -0.707105 -0.707108 -2.59735e-06">
+                    <inertial pos="-0.130584 0.000138485 -1.30075e-07" quat="-0.00306086 0.707108 0.00353127 0.70709" mass="0.183436" diaginertia="0.000118456 0.000103248 7.3398e-05" />
+                    <joint name="right_arm3" pos="0 0 0" axis="-1 0 0" range="-2.0944 2.0944" actuatorfrcrange="-100 100" />
+                    <geom type="mesh" rgba="1 1 1 1" mesh="right_arm3" />
+                    <body name="right_arm4" pos="-0.1505 0 0" quat="-2.59734e-06 0.707105 0.707108 -2.59735e-06">
+                      <inertial pos="0.000495647 -0.0563067 1.40988e-07" quat="0.499804 0.500155 -0.499846 0.500195" mass="0.0862002" diaginertia="5.38102e-05 4.43488e-05 2.73177e-05" />
+                      <joint name="right_arm4" pos="0 0 0" axis="-1 0 0" range="-2.0944 2.0944" actuatorfrcrange="-100 100" />
+                      <geom type="mesh" rgba="0 0.92549 1 1" mesh="right_arm4" />
+                      <body name="right_arm5" pos="0.00049256 -0.09 0" quat="0.707105 0 0 -0.707108">
+                        <inertial pos="0.0613546 9.49358e-07 7.53654e-07" quat="-0.232497 0.667791 -0.232525 0.667781" mass="0.015991" diaginertia="3.00054e-05 2.99968e-05 2.01608e-06" />
+                        <joint name="right_arm5" pos="0 0 0" axis="-1 0 0" range="-2.0944 2.0944" actuatorfrcrange="-100 100" />
+                        <geom type="mesh" rgba="1 1 1 1" mesh="right_arm5" />
+                      </body>
+                    </body>
+                  </body>
+                </body>
+              </body>
+              <site name="imu_site" pos="0 0 0" size="0.005" />
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+  <option timestep="0.002" gravity="0 0 -9.81" integrator="implicit" />
+  <visual>
+    <global offwidth="1920" offheight="1080" />
+  </visual>
+  <default>
+    <joint damping="5.0" armature="0.05" />
+  </default>
+  <actuator>
+    <!-- Spine: very high kp+kv = essentially rigid, no gravity oscillation -->
+    <position name="spine1_motor" joint="spine1" kp="5000" kv="200" ctrlrange="-1.0472 1.0472" />
+    <position name="spine2_motor" joint="spine2" kp="5000" kv="200" ctrlrange="-1.0472 1.0472" />
+    <position name="spine3_motor" joint="spine3" kp="5000" kv="200" ctrlrange="-1.0472 1.0472" />
+    <!-- Arms: moderate kp for smooth motion -->
+    <position name="left_arm1_motor" joint="left_arm1" kp="200" kv="15" ctrlrange="-2.0944 2.0944" />
+    <position name="left_arm2_motor" joint="left_arm2" kp="200" kv="15" ctrlrange="-2.2689 2.2689" />
+    <position name="left_arm3_motor" joint="left_arm3" kp="150" kv="10" ctrlrange="-2.0944 2.0944" />
+    <position name="left_arm4_motor" joint="left_arm4" kp="150" kv="10" ctrlrange="-2.0944 2.0944" />
+    <position name="left_arm5_motor" joint="left_arm5" kp="100" kv="8" ctrlrange="-2.0944 2.0944" />
+    <position name="right_arm1_motor" joint="right_arm1" kp="200" kv="15" ctrlrange="-2.0944 2.0944" />
+    <position name="right_arm2_motor" joint="right_arm2" kp="200" kv="15" ctrlrange="-2.0944 2.0944" />
+    <position name="right_arm3_motor" joint="right_arm3" kp="150" kv="10" ctrlrange="-2.0944 2.0944" />
+    <position name="right_arm4_motor" joint="right_arm4" kp="150" kv="10" ctrlrange="-2.0944 2.0944" />
+    <position name="right_arm5_motor" joint="right_arm5" kp="100" kv="8" ctrlrange="-2.0944 2.0944" />
+  </actuator>
+  <sensor>
+    <gyro name="imu_gyro" site="imu_site" />
+    <accelerometer name="imu_accel" site="imu_site" />
+  </sensor>
+</mujoco>
