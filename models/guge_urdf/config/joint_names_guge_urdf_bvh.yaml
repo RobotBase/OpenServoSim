@@ -1,0 +1,57 @@
+controller_joint_names: ['', 'spine1', 'spine2', 'spine3', 'left_arm1', 'left_arm2', 'left_arm3', 'left_arm4', 'left_arm5', 'right_arm1', 'right_arm2', 'right_arm3', 'right_arm4', 'right_arm5', ]
+joint_sign:
+  spine1: 1.0
+  spine2: 1.0
+  spine3: 1.0
+  left_arm1: 1.0
+  left_arm2: 1.0
+  left_arm3: 1.0
+  left_arm4: -1.0
+  left_arm5: 1.0
+  right_arm1: -1.0
+  right_arm2: 1.0
+  right_arm3: 1.0
+  right_arm4: -1.0
+  right_arm5: 1.0
+joint_offset_deg:
+  spine1: 0.0
+  spine2: 0.0
+  spine3: 0.0
+  left_arm1: 0.0
+  left_arm2: 0.0
+  left_arm3: 0.0
+  left_arm4: 0.0
+  left_arm5: 0.0
+  right_arm1: 0.0
+  right_arm2: 0.0
+  right_arm3: 0.0
+  right_arm4: 0.0
+  right_arm5: 0.0
+joint_min_deg:
+  spine1: -60.0
+  spine2: -60.0
+  spine3: -60.0
+  left_arm1: -120.0
+  left_arm2: -130.0
+  left_arm3: -120.0
+  left_arm4: -120.0
+  left_arm5: -120.0
+  right_arm1: -120.0
+  right_arm2: -120.0
+  right_arm3: -120.0
+  right_arm4: -120.0
+  right_arm5: -120.0
+joint_max_deg:
+  spine1: 60.0
+  spine2: 60.0
+  spine3: 60.0
+  left_arm1: 120.0
+  left_arm2: 130.0
+  left_arm3: 120.0
+  left_arm4: 120.0
+  left_arm5: 120.0
+  right_arm1: 120.0
+  right_arm2: 120.0
+  right_arm3: 120.0
+  right_arm4: 120.0
+  right_arm5: 120.0

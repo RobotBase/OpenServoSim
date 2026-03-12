@@ -1,0 +1,807 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="guge_urdf">
+  <link name="base_footprint"/>
+  <joint name="base_joint" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="0.00190639026610518 -0.0117675767050606 0.0121831043800871"
+        rpy="0 0 0" />
+      <mass
+        value="0.0735648375268099" />
+      <inertia
+        ixx="5.12224778504478E-05"
+        ixy="-1.00529921128209E-08"
+        ixz="2.88787707212053E-07"
+        iyy="4.80650643169955E-05"
+        iyz="-1.24729593477925E-07"
+        izz="5.25189016539282E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://guge_urdf/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://guge_urdf/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="spine1">
+    <inertial>
+      <origin
+        xyz="0.0389276332793516 0.00499533708491126 -0.000482302723753972"
+        rpy="0 0 0" />
+      <mass
+        value="0.725188871861127" />
+      <inertia
+        ixx="0.00057293011231733"
+        ixy="1.00676190675644E-07"
+        ixz="-1.05753932755853E-06"
+        iyy="0.000580138631380818"
+        iyz="3.29512502419463E-07"
+        izz="0.000577053228842572" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://guge_urdf/meshes/spine1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://guge_urdf/meshes/spine1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="spine1"
+    type="revolute">
+    <origin
+      xyz="0.00025 -0.011777 0.04725"
+      rpy="3.1416 -1.5708 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="spine1" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-1.0472"
+      upper="1.0472"
+      effort="100"
+      velocity="1" />
+  </joint>
+  <link
+    name="spine2">
+    <inertial>
+      <origin
+        xyz="-1.56705211504975E-09 0.037397833263464 0.0227848087513084"
+        rpy="0 0 0" />
+      <mass
+        value="0.0915668735319825" />
+      <inertia
+        ixx="5.57263631097904E-05"
+        ixy="-1.4948167176365E-12"
+        ixz="1.40401119818368E-12"
+        iyy="7.41357670859027E-05"
+        iyz="3.06789885545762E-07"
+        izz="8.91496241449259E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://guge_urdf/meshes/spine2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://guge_urdf/meshes/spine2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="spine2"
+    type="revolute">
+    <origin
+      xyz="0.082 0.005 0"
+      rpy="1.5708 1.5708 0" />
+    <parent
+      link="spine1" />
+    <child
+      link="spine2" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-1.0472"
+      upper="1.0472"
+      effort="100"
+      velocity="1" />
+  </joint>
+  <link
+    name="spine3">
+    <inertial>
+      <origin
+        xyz="-0.105525092918912 9.89614714619036E-05 -0.000781485814982597"
+        rpy="0 0 0" />
+      <mass
+        value="0.952000795664401" />
+      <inertia
+        ixx="0.000775321788502458"
+        ixy="-2.03648065018548E-08"
+        ixz="6.51952018651341E-07"
+        iyy="0.000750870190589932"
+        iyz="1.3604796395898E-07"
+        izz="0.0011267481289553" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://guge_urdf/meshes/spine3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0 0.925490196078431 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://guge_urdf/meshes/spine3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="spine3"
+    type="revolute">
+    <origin
+      xyz="0 0.0645 0"
+      rpy="0 0 -1.5708" />
+    <parent
+      link="spine2" />
+    <child
+      link="spine3" />
+    <axis
+      xyz="1 0 0" />
+    <limit
+      lower="-1.0472"
+      upper="1.0472"
+      effort="100"
+      velocity="1" />
+  </joint>
+  <link
+    name="left_arm1">
+    <inertial>
+      <origin
+        xyz="-0.0362475607657735 5.69056149424263E-10 -0.000276670710870803"
+        rpy="0 0 0" />
+      <mass
+        value="0.161439178700446" />
+      <inertia
+        ixx="6.77226963517571E-05"
+        ixy="-2.43681565201346E-13"
+        ixz="-2.77566680821334E-07"
+        iyy="8.4282842984588E-05"
+        iyz="-9.91046566710213E-10"
+        izz="6.90616005014233E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://guge_urdf/meshes/left_arm1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://guge_urdf/meshes/left_arm1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="left_arm1"
+    type="revolute">
+    <origin
+      xyz="-0.13199 0.10772 0"
+      rpy="0 0 -1.3963" />
+    <parent
+      link="spine3" />
+    <child
+      link="left_arm1" />
+    <axis
+      xyz="1 0 0" />
+    <limit
+      lower="-2.0944"
+      upper="2.0944"
+      effort="100"
+      velocity="1" />
+  </joint>
+  <link
+    name="left_arm2">
+    <inertial>
+      <origin
+        xyz="1.62124578136115E-05 -0.0657239022806876 -1.94246126211661E-07"
+        rpy="0 0 0" />
+      <mass
+        value="0.158227100759892" />
+      <inertia
+        ixx="0.00011101791282566"
+        ixy="9.51083034986573E-09"
+        ixz="-4.48264615859192E-07"
+        iyy="6.59201417952007E-05"
+        iyz="-2.21910128137963E-10"
+        izz="0.000124015936889463" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://guge_urdf/meshes/letf_arm2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://guge_urdf/meshes/letf_arm2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="left_arm2"
+    type="revolute">
+    <origin
+      xyz="-0.0455 0 0"
+      rpy="1.3091 -1.5708 3.1416" />
+    <parent
+      link="left_arm1" />
+    <child
+      link="left_arm2" />
+    <axis
+      xyz="1 0 0" />
+    <limit
+      lower="-2.2689"
+      upper="2.2689"
+      effort="100"
+      velocity="1" />
+  </joint>
+  <link
+    name="left_arm3">
+    <inertial>
+      <origin
+        xyz="-0.130583566946272 0.000138485195165489 -1.30075265957624E-07"
+        rpy="0 0 0" />
+      <mass
+        value="0.183435528555647" />
+      <inertia
+        ixx="7.34005893594831E-05"
+        ixy="-2.78265673363987E-07"
+        ixz="1.20682067839756E-09"
+        iyy="0.000103245245639303"
+        iyz="1.0126928489571E-08"
+        izz="0.00011845594161857" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://guge_urdf/meshes/letf_arm3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://guge_urdf/meshes/letf_arm3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="left_arm3"
+    type="revolute">
+    <origin
+      xyz="1.5E-05 -0.103 0"
+      rpy="-1.5708 0 1.5708" />
+    <parent
+      link="left_arm2" />
+    <child
+      link="left_arm3" />
+    <axis
+      xyz="-1 0 0" />
+    <limit
+      lower="-2.0944"
+      upper="2.0944"
+      effort="100"
+      velocity="1" />
+  </joint>
+  <link
+    name="left_arm4">
+    <inertial>
+      <origin
+        xyz="0.000495647305943342 -0.0563067339315681 1.40988440928969E-07"
+        rpy="0 0 0" />
+      <mass
+        value="0.0862002261321482" />
+      <inertia
+        ixx="4.43487500505482E-05"
+        ixy="1.18962177525358E-08"
+        ixz="-7.73868876942444E-10"
+        iyy="2.73177082557491E-05"
+        iyz="-4.46513009035675E-11"
+        izz="5.38102290465927E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://guge_urdf/meshes/letf_arm4.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://guge_urdf/meshes/letf_arm4.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="left_arm4"
+    type="revolute">
+    <origin
+      xyz="-0.1505 0 0"
+      rpy="3.1416 0 1.5708" />
+    <parent
+      link="left_arm3" />
+    <child
+      link="left_arm4" />
+    <axis
+      xyz="-1 0 0" />
+    <limit
+      lower="-2.0944"
+      upper="2.0944"
+      effort="100"
+      velocity="1" />
+  </joint>
+  <link
+    name="left_arm5">
+    <inertial>
+      <origin
+        xyz="0.0613545689657162 -7.53654428649331E-07 9.49357964047381E-07"
+        rpy="0 0 0" />
+      <mass
+        value="0.0159909789683146" />
+      <inertia
+        ixx="2.01607720240835E-06"
+        ixy="-7.22779476448106E-10"
+        ixz="9.17251228240111E-10"
+        iyy="3.00020832431416E-05"
+        iyz="4.16027131068942E-09"
+        izz="3.00001299678427E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://guge_urdf/meshes/letf_arm5.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://guge_urdf/meshes/letf_arm5.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="left_arm5"
+    type="revolute">
+    <origin
+      xyz="0.00049256 -0.09 0"
+      rpy="-1.5708 0 -1.5708" />
+    <parent
+      link="left_arm4" />
+    <child
+      link="left_arm5" />
+    <axis
+      xyz="-1 0 0" />
+    <limit
+      lower="-2.0944"
+      upper="2.0944"
+      effort="100"
+      velocity="1" />
+  </joint>
+  <link
+    name="right_arm1">
+    <inertial>
+      <origin
+        xyz="-0.0362475607657736 -0.000276670710870803 -5.69057301280651E-10"
+        rpy="0 0 0" />
+      <mass
+        value="0.161439178700446" />
+      <inertia
+        ixx="6.7722696351757E-05"
+        ixy="-2.77566680821345E-07"
+        ixz="2.43681067145962E-13"
+        iyy="6.90616005014232E-05"
+        iyz="9.91046566699499E-10"
+        izz="8.42828429845879E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://guge_urdf/meshes/right_arm1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://guge_urdf/meshes/right_arm1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="right_arm1"
+    type="revolute">
+    <origin
+      xyz="-0.13199 -0.10772 0"
+      rpy="-1.5708 0 1.3963" />
+    <parent
+      link="spine3" />
+    <child
+      link="right_arm1" />
+    <axis
+      xyz="1 0 0" />
+    <limit
+      lower="-2.0944"
+      upper="2.0944"
+      effort="100"
+      velocity="1" />
+  </joint>
+  <link
+    name="right_arm2">
+    <inertial>
+      <origin
+        xyz="1.94246126128395E-07 -0.0657239022806877 1.62124578136462E-05"
+        rpy="0 0 0" />
+      <mass
+        value="0.158227100759892" />
+      <inertia
+        ixx="0.000124015936889462"
+        ixy="2.21910128315818E-10"
+        ixz="4.48264615859155E-07"
+        iyy="6.59201417952006E-05"
+        iyz="9.51083034978799E-09"
+        izz="0.00011101791282566" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://guge_urdf/meshes/right_arm2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://guge_urdf/meshes/right_arm2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="right_arm2"
+    type="revolute">
+    <origin
+      xyz="-0.0455 0 0"
+      rpy="1.5708 -1.3090 3.1416" />
+    <parent
+      link="right_arm1" />
+    <child
+      link="right_arm2" />
+    <axis
+      xyz="0 0 -1" />
+    <limit
+      lower="-2.0944"
+      upper="2.0944"
+      effort="100"
+      velocity="1" />
+  </joint>
+  <link
+    name="right_arm3">
+    <inertial>
+      <origin
+        xyz="-0.130583566946272 0.0001384851951656 -1.30075266027013E-07"
+        rpy="0 0 0" />
+      <mass
+        value="0.183435528555647" />
+      <inertia
+        ixx="7.34005893594831E-05"
+        ixy="-2.7826567336397E-07"
+        ixz="1.20682067843099E-09"
+        iyy="0.000103245245639303"
+        iyz="1.01269284896162E-08"
+        izz="0.00011845594161857" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://guge_urdf/meshes/right_arm3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://guge_urdf/meshes/right_arm3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="right_arm3"
+    type="revolute">
+    <origin
+      xyz="0 -0.103 1.5E-05"
+      rpy="-3.1416 0 1.5708" />
+    <parent
+      link="right_arm2" />
+    <child
+      link="right_arm3" />
+    <axis
+      xyz="-1 0 0" />
+    <limit
+      lower="-2.0944"
+      upper="2.0944"
+      effort="100"
+      velocity="1" />
+  </joint>
+  <link
+    name="right_arm4">
+    <inertial>
+      <origin
+        xyz="0.000495647305943259 -0.0563067339315681 1.40988440883866E-07"
+        rpy="0 0 0" />
+      <mass
+        value="0.0862002261321484" />
+      <inertia
+        ixx="4.43487500505483E-05"
+        ixy="1.18962177525968E-08"
+        ixz="-7.73868876995168E-10"
+        iyy="2.73177082557492E-05"
+        iyz="-4.465130087759E-11"
+        izz="5.38102290465928E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://guge_urdf/meshes/right_arm4.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0 0.925490196078431 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://guge_urdf/meshes/right_arm4.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="right_arm4"
+    type="revolute">
+    <origin
+      xyz="-0.1505 0 0"
+      rpy="3.1416 0 1.5708" />
+    <parent
+      link="right_arm3" />
+    <child
+      link="right_arm4" />
+    <axis
+      xyz="-1 0 0" />
+    <limit
+      lower="-2.0944"
+      upper="2.0944"
+      effort="100"
+      velocity="1" />
+  </joint>
+  <link
+    name="right_arm5">
+    <inertial>
+      <origin
+        xyz="0.0613545689657166 9.4935796399187E-07 7.53654428895661E-07"
+        rpy="0 0 0" />
+      <mass
+        value="0.0159909789683142" />
+      <inertia
+        ixx="2.01607720240832E-06"
+        ixy="9.17251228225181E-10"
+        ixz="7.22779476440289E-10"
+        iyy="3.00001299678425E-05"
+        iyz="-4.1602713106709E-09"
+        izz="3.00020832431414E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://guge_urdf/meshes/right_arm5.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://guge_urdf/meshes/right_arm5.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="right_arm5"
+    type="revolute">
+    <origin
+      xyz="0.00049256 -0.09 0"
+      rpy="0 0 -1.5708" />
+    <parent
+      link="right_arm4" />
+    <child
+      link="right_arm5" />
+    <axis
+      xyz="-1 0 0" />
+    <limit
+      lower="-2.0944"
+      upper="2.0944"
+      effort="100"
+      velocity="1" />
+  </joint>
+</robot>

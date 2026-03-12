@@ -1,263 +1,235 @@
 """
-=============================================================================
-  OpenServoSim - Milestone 4: RL Training for OP3 Walking
-=============================================================================
+OpenServoSim - Train OP3 Fast Walking Policy
 
-  Trains a PPO policy for the OP3 robot using DeepMind's mujoco_playground
-  Op3Joystick environment with Brax PPO.
-  
-  Key: The mujoco_playground State class needs to be wrapped for Brax
-  compatibility (Brax expects .pipeline_state, playground uses .data).
+Uses Op3Joystick environment with high forward velocity commands and
+reward weights optimized for fast, stable bipedal walking.
 
-  Requirements (WSL2 with CUDA or CPU):
-    pip install 'jax[cuda12]' playground brax ml-collections mujoco
+Key design:
+  - High forward velocity target: [1.0, 2.0] m/s
+  - Strong orientation penalty: robot must stay upright (no crawling)
+  - Strong height bonus: must maintain standing height
+  - Boosted tracking reward: encourage matching velocity commands
+  - Velocity kick perturbations: build robustness
 
-  Run:
-    # From WSL2:
-    source /home/op3_rl_venv/bin/activate
-    JAX_PLATFORMS=cpu python /mnt/c/GitHub/OpenServoSim/training/train_op3_walk.py
-
-  Note: CPU training with reduced params (~5M steps, 256 envs).
-  For GPU training, JAX CUDA 12 must match your GPU driver's CUDA version.
-=============================================================================
+Usage:
+  cd /home/zero/mujoco_playground && source .venv/bin/activate
+  python /home/zero/OpenServoSim/training/train_op3_walk.py
 """
 
 import os
-import sys
+import functools
 import time
 import json
-import pickle
-from datetime import datetime
-from typing import Any
+import datetime
 
-# Force CPU if no GPU available
-if "JAX_PLATFORMS" not in os.environ:
-    os.environ["JAX_PLATFORMS"] = "cpu"
+os.environ["XLA_PYTHON_CLIENT_PREALLOCATE"] = "false"
+os.environ["MUJOCO_GL"] = "egl"
 
 import jax
-import jax.numpy as jnp
+import jax.numpy as jp
+import mujoco
 import numpy as np
-from brax.training.agents.ppo import train as ppo
 from brax.training.agents.ppo import networks as ppo_networks
-from brax.training import types
-from mujoco_playground import registry
-from mujoco_playground._src import mjx_env
+from brax.training.agents.ppo import train as ppo
+from mujoco_playground._src.locomotion.op3 import joystick as op3_joystick
+from mujoco_playground import wrapper
+
 
 # ===== Configuration =====
-ENV_NAME = "Op3Joystick"
-NUM_TIMESTEPS = 5_000_000  # Reduced for CPU training
-NUM_ENVS = 256  # Reduced for CPU
-NUM_EVALS = 5
+NUM_TIMESTEPS = 200_000_000   # 200M steps for walking (harder task)
+NUM_ENVS = 8192
+NUM_EVALS = 10
+EPISODE_LENGTH = 1000
 SEED = 42
 
-CHECKPOINT_DIR = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), "checkpoints", "op3_walk"
+PPO_PARAMS = dict(
+    num_timesteps=NUM_TIMESTEPS,
+    num_evals=NUM_EVALS,
+    reward_scaling=1.0,
+    episode_length=EPISODE_LENGTH,
+    normalize_observations=True,
+    action_repeat=1,
+    unroll_length=20,
+    num_minibatches=32,
+    num_updates_per_batch=4,
+    discounting=0.97,
+    learning_rate=3e-4,
+    entropy_cost=1e-2,
+    num_envs=NUM_ENVS,
+    batch_size=256,
+    max_grad_norm=1.0,
 )
-os.makedirs(CHECKPOINT_DIR, exist_ok=True)
 
-
-class BraxWrapper:
-    """Wraps mujoco_playground env to be Brax-PPO compatible.
-    
-    Brax's ppo.train expects:
-    - env.reset(rng) -> State with .pipeline_state
-    - env.step(state, action) -> State with .pipeline_state  
-    - env.observation_size -> int
-    - env.action_size -> int
-    
-    mujoco_playground's State has .data instead of .pipeline_state.
-    This wrapper patches State to add pipeline_state as an alias.
-    """
-
-    def __init__(self, env):
-        self._env = env
-
-    def _patch_state(self, state: mjx_env.State):
-        """Add pipeline_state attribute by monkey-patching."""
-        # Brax's training wrapper accesses state.pipeline_state
-        # We map it to state.data for compatibility
-        # Since State is a flax struct.dataclass, we can't easily add attrs
-        # Instead, we return a dict-like wrapper
-        return BraxState(state)
-
-    def reset(self, rng):
-        state = self._env.reset(rng)
-        return self._patch_state(state)
-
-    def step(self, state, action):
-        # Unwrap back to MJX state
-        mjx_state = state._mjx_state
-        new_state = self._env.step(mjx_state, action)
-        return self._patch_state(new_state)
-
-    @property
-    def observation_size(self):
-        return self._env.observation_size
-
-    @property
-    def action_size(self):
-        return self._env.action_size
-
-    @property
-    def unwrapped(self):
-        return self._env
-
-
-class BraxState:
-    """State wrapper that adds .pipeline_state for Brax compatibility."""
-
-    def __init__(self, mjx_state):
-        self._mjx_state = mjx_state
-
-    @property
-    def pipeline_state(self):
-        return self._mjx_state.data
-
-    @property
-    def obs(self):
-        return self._mjx_state.obs
-
-    @property
-    def reward(self):
-        return self._mjx_state.reward
-
-    @property
-    def done(self):
-        return self._mjx_state.done
-
-    @property
-    def metrics(self):
-        return self._mjx_state.metrics
-
-    @property
-    def info(self):
-        return self._mjx_state.info
-
-    def replace(self, **kwargs):
-        # Delegate to underlying state
-        new_mjx = self._mjx_state.replace(**kwargs)
-        return BraxState(new_mjx)
-
-    def tree_replace(self, params):
-        new_mjx = self._mjx_state.tree_replace(params)
-        return BraxState(new_mjx)
-
-
-_start_time = 0
-
-
-def progress_callback(num_steps, metrics):
-    """Called periodically during training to report progress."""
-    reward = metrics.get("eval/episode_reward", 0)
-    r = float(jnp.mean(reward)) if hasattr(reward, "shape") else float(reward)
-    elapsed = time.time() - _start_time
-    sps = num_steps / elapsed if elapsed > 0 else 0
-    print(
-        f"  Step {num_steps:>10,}  |  "
-        f"reward: {r:>8.2f}  |  "
-        f"SPS: {sps:>8.0f}  |  "
-        f"time: {elapsed:>6.0f}s ({elapsed/60:.1f}m)"
-    )
+NETWORK_FACTORY = dict(
+    policy_hidden_layer_sizes=(128, 128, 128, 128),
+    value_hidden_layer_sizes=(256, 256, 256, 256, 256),
+    policy_obs_key="state",
+    value_obs_key="state",
+)
 
 
 def main():
-    global _start_time
-
     print("=" * 70)
-    print("  OpenServoSim - OP3 RL Training (Brax PPO)")
+    print("  OpenServoSim - OP3 Fast Walking RL Training")
     print("=" * 70)
 
     backend = jax.default_backend()
     devices = jax.devices()
     print(f"  JAX backend: {backend}")
     print(f"  Devices: {devices}")
-    
-    if backend == "gpu":
-        num_ts = 100_000_000
-        num_envs = 8192
-        print("  GPU mode: full training (100M steps, 8192 envs)")
-    else:
-        num_ts = NUM_TIMESTEPS
-        num_envs = NUM_ENVS
-        print(f"  CPU mode: reduced training ({num_ts/1e6:.0f}M steps, {num_envs} envs)")
-        print("  WARNING: CPU training is ~100x slower than GPU.")
 
-    # Load environment
-    print(f"\n  Loading {ENV_NAME}...")
-    env = registry.load(ENV_NAME)
+    # Configure Op3Joystick for fast walking
+    cfg = op3_joystick.default_config()
+
+    # High forward velocity, moderate lateral and turning
+    cfg.lin_vel_x = [0.5, 2.0]      # Fast forward walking (0.5-2.0 m/s)
+    cfg.lin_vel_y = [-0.3, 0.3]     # Small lateral motion
+    cfg.ang_vel_yaw = [-0.5, 0.5]   # Moderate turning
+
+    # Reward weights optimized for fast, stable bipedal walking
+    cfg.reward_config.scales.tracking_lin_vel = 10.0   # Strong incentive to match velocity
+    cfg.reward_config.scales.tracking_ang_vel = 5.0    # Match turning commands
+    cfg.reward_config.scales.orientation = -8.0        # MUST stay upright (prevents crawling)
+    cfg.reward_config.scales.lin_vel_z = -2.0          # No bouncing
+    cfg.reward_config.scales.ang_vel_xy = -0.1         # No wobbling
+    cfg.reward_config.scales.torques = -0.0001         # Slight energy efficiency
+    cfg.reward_config.scales.action_rate = -0.01       # Smooth motion
+    cfg.reward_config.scales.zero_cmd = -0.5           # Quiet when stopped
+    cfg.reward_config.scales.termination = -1.0        # Don't fall
+    cfg.reward_config.scales.feet_slip = -0.1          # No foot sliding
+    cfg.reward_config.scales.feet_clearance = 0.5      # Lift feet properly
+    cfg.reward_config.scales.energy = -0.0001          # Power efficiency
+
+    # Velocity perturbations for robustness
+    cfg.velocity_kick = [1.0, 5.0]
+    cfg.kick_durations = [0.05, 0.2]
+    cfg.kick_wait_times = [1.0, 3.0]
+
+    # Action scale: slightly larger for walking
+    cfg.action_scale = 0.3
+
+    print(f"\n  Loading Op3Joystick (fast walking mode)...")
+    env = op3_joystick.Joystick(config=cfg)
     print(f"  Action size: {env.action_size}")
     print(f"  Observation size: {env.observation_size}")
-    print(f"  Control dt: {env._config.ctrl_dt}s")
-    
-    # Use Brax wrapper
-    wrapped_env = BraxWrapper(env)
+    print(f"  Control dt: {env.dt}s, Sim dt: {env.sim_dt}s")
+    print(f"  Velocity range: x={cfg.lin_vel_x}, y={cfg.lin_vel_y}, yaw={cfg.ang_vel_yaw}")
 
-    print(f"\n  PPO Config:")
-    print(f"    num_timesteps:  {num_ts:,}")
-    print(f"    num_envs:       {num_envs}")
-    print(f"    learning_rate:  3e-4")
-    
-    print(f"\n  Starting training...")
-    print(f"  {'━' * 64}")
-    _start_time = time.time()
-
-    try:
-        make_inference_fn, params, metrics = ppo.train(
-            environment=wrapped_env,
-            num_timesteps=num_ts,
-            num_evals=NUM_EVALS,
-            reward_scaling=1.0,
-            episode_length=1000,
-            normalize_observations=True,
-            action_repeat=1,
-            unroll_length=20,
-            num_minibatches=8 if backend == "cpu" else 32,
-            num_updates_per_batch=4,
-            discounting=0.97,
-            learning_rate=3e-4,
-            entropy_cost=1e-2,
-            num_envs=num_envs,
-            batch_size=128 if backend == "cpu" else 256,
-            max_devices_per_host=1,
-            seed=SEED,
-            progress_fn=progress_callback,
-        )
-    except Exception as e:
-        print(f"\n  Training error: {e}")
-        print(f"\n  This may be a Brax/MJX API compatibility issue.")
-        print(f"  Attempting alternative: direct MJX PPO training...")
-        raise
-
-    elapsed = time.time() - _start_time
-    print(f"  {'━' * 64}")
-    print(f"  Training complete in {elapsed:.1f}s ({elapsed/60:.1f} minutes)")
-
-    # Save checkpoint
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    ckpt_path = os.path.join(CHECKPOINT_DIR, f"op3_walk_{timestamp}")
+    # Setup logging
+    timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+    exp_name = f"Op3Walk-{timestamp}"
+    logdir = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "logs", exp_name
+    )
+    ckpt_path = os.path.join(logdir, "checkpoints")
     os.makedirs(ckpt_path, exist_ok=True)
+    print(f"  Experiment: {exp_name}")
+    print(f"  Checkpoints: {ckpt_path}")
 
-    with open(os.path.join(ckpt_path, "params.pkl"), "wb") as f:
-        pickle.dump(params, f)
+    # Save config
+    with open(os.path.join(ckpt_path, "config.json"), "w") as f:
+        json.dump(cfg.to_dict(), f, indent=2, default=str)
 
-    with open(os.path.join(ckpt_path, "inference_fn.pkl"), "wb") as f:
-        pickle.dump({"make_inference_fn": make_inference_fn, "params": params}, f)
+    # Network
+    network_fn = functools.partial(
+        ppo_networks.make_ppo_networks, **NETWORK_FACTORY
+    )
 
-    meta = {
-        "env_name": ENV_NAME,
-        "training_time_s": elapsed,
-        "num_timesteps": num_ts,
-        "num_envs": num_envs,
-        "timestamp": timestamp,
-        "backend": backend,
-        "device": str(devices[0]),
-    }
-    with open(os.path.join(ckpt_path, "metadata.json"), "w") as f:
-        json.dump(meta, f, indent=2)
+    # Eval env
+    eval_env = op3_joystick.Joystick(config=cfg)
 
-    print(f"\n  Checkpoint: {ckpt_path}")
-    print(f"\n  Next: Run inference:")
-    print(f"    python examples/04_rl_inference.py {ckpt_path}")
+    times = [time.monotonic()]
+
+    def progress(num_steps, metrics):
+        times.append(time.monotonic())
+        r = metrics.get("eval/episode_reward", 0)
+        print(f"  {num_steps}: reward={float(r):.3f}")
+
+    print(f"\n  PPO: {NUM_TIMESTEPS//1_000_000}M steps, {NUM_ENVS} envs")
+    print(f"  Starting training...")
+    print(f"  {'━' * 60}")
+
+    train_fn = functools.partial(
+        ppo.train,
+        **PPO_PARAMS,
+        network_factory=network_fn,
+        seed=SEED,
+        save_checkpoint_path=ckpt_path,
+        wrap_env_fn=wrapper.wrap_for_brax_training,
+        num_eval_envs=128,
+    )
+
+    make_inference_fn, params, _ = train_fn(
+        environment=env,
+        progress_fn=progress,
+        eval_env=eval_env,
+    )
+
+    print(f"  {'━' * 60}")
+    if len(times) > 1:
+        print(f"  JIT compile: {times[1] - times[0]:.1f}s")
+        print(f"  Training: {times[-1] - times[1]:.1f}s")
+    print(f"  Training complete!")
+
+    # Render rollout video
+    print(f"\n  Rendering rollout video...")
+    try:
+        inference_fn = make_inference_fn(params, deterministic=True)
+        jit_inference_fn = jax.jit(inference_fn)
+
+        infer_env = op3_joystick.Joystick(config=cfg)
+        wrapped_env = wrapper.wrap_for_brax_training(
+            infer_env, episode_length=EPISODE_LENGTH, action_repeat=1,
+        )
+
+        NUM_ROLLOUTS = 1
+        rng = jax.random.split(jax.random.PRNGKey(SEED), NUM_ROLLOUTS)
+        reset_states = jax.jit(wrapped_env.reset)(rng)
+
+        def step_fn(carry, _):
+            state, rng = carry
+            rng, act_key = jax.random.split(rng)
+            act_keys = jax.random.split(act_key, NUM_ROLLOUTS)
+            act = jax.vmap(jit_inference_fn)(state.obs, act_keys)[0]
+            state = wrapped_env.step(state, act)
+            return (state, rng), state
+
+        @jax.jit
+        def do_rollout(state, rng):
+            _, traj = jax.lax.scan(
+                step_fn, (state, rng), None, length=500
+            )
+            return traj
+
+        print(f"  Running rollout (JIT compiling)...")
+        traj = do_rollout(reset_states, jax.random.PRNGKey(SEED + 1))
+
+        # Render frames
+        print(f"  Rendering frames...")
+        render_every = 2
+        fps = 1.0 / infer_env.dt / render_every
+
+        qposes = traj.data.qpos[::render_every, 0]
+        renderer = mujoco.Renderer(infer_env.mj_model, height=480, width=640)
+        mj_data = mujoco.MjData(infer_env.mj_model)
+        frames = []
+        for i in range(qposes.shape[0]):
+            mj_data.qpos[:] = np.array(qposes[i])
+            mujoco.mj_forward(infer_env.mj_model, mj_data)
+            renderer.update_scene(mj_data, camera="track")
+            frames.append(renderer.render())
+        renderer.close()
+
+        import mediapy as media
+        video_path = os.path.join(logdir, "rollout.mp4")
+        media.write_video(video_path, frames, fps=fps)
+        print(f"  Video saved: {video_path}")
+    except Exception as e:
+        print(f"  Video rendering failed: {e}")
+        import traceback
+        traceback.print_exc()
+
+    print(f"\n  All done! Checkpoint: {ckpt_path}")
 
 
 if __name__ == "__main__":
