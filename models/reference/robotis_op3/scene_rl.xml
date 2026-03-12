@@ -1,0 +1,71 @@
+<mujoco model="op3 scene rl">
+  <!--
+    OP3 scene for RL training with MJX.
+    Based on scene_enhanced.xml + sensors from mujoco_playground's op3_mjx_feetonly.xml.
+    Key additions: MJX-compatible sensors, foot sites, keyframes, MJX-tuned options.
+  -->
+  <include file="op3.xml"/>
+
+  <option iterations="1" ls_iterations="5" timestep=".004">
+    <flag eulerdamp="disable"/>
+  </option>
+
+  <statistic center="0 0 0.2" extent="0.6"/>
+
+  <visual>
+    <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0"/>
+    <rgba haze="0.15 0.25 0.35 1"/>
+    <global azimuth="160" elevation="-20"/>
+  </visual>
+
+  <asset>
+    <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="3072"/>
+    <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="0.2 0.3 0.4" rgb2="0.1 0.2 0.3"
+      markrgb="0.8 0.8 0.8" width="300" height="300"/>
+    <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.2"/>
+  </asset>
+
+  <worldbody>
+    <light pos="0 0 1.5" dir="0 0 -1" directional="true"/>
+    <geom name="floor" size="0 0 0.05" type="plane" material="groundplane" contype="1" conaffinity="1"/>
+  </worldbody>
+
+  <!-- Override actuator defaults: stronger servos (enhanced) -->
+  <default>
+    <position kp="40" ctrlrange="-3.141592 3.141592" forcerange="-12 12"/>
+  </default>
+
+  <!-- Sensors for MJX RL training -->
+  <sensor>
+    <framepos objtype="site" objname="torso" name="position"/>
+    <gyro site="torso" name="gyro"/>
+    <velocimeter site="torso" name="local_linvel"/>
+    <accelerometer site="torso" name="accelerometer"/>
+    <framezaxis objtype="site" objname="torso" name="upvector"/>
+    <framexaxis objtype="site" objname="torso" name="forwardvector"/>
+    <framelinvel objtype="site" objname="torso" name="global_linvel"/>
+    <frameangvel objtype="site" objname="torso" name="global_angvel"/>
+    <framequat objtype="site" objname="torso" name="orientation"/>
+  </sensor>
+
+  <!-- Standing keyframe (all joints at zero) -->
+  <keyframe>
+    <key name="stand"
+      qpos="
+        0 0 0.3
+        1 0 0 0
+        0 0
+        0 0 0
+        0 0 0
+        0 0 0 0 0 0
+        0 0 0 0 0 0
+      "
+      ctrl="
+      0 0
+      0 0 0
+      0 0 0
+      0 0 0 0 0 0
+      0 0 0 0 0 0
+      "/>
+  </keyframe>
+</mujoco>
